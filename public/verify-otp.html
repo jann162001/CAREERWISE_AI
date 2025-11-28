@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - CareerWise</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .otp-container {
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .otp-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .otp-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .otp-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .otp-input.filled {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .resend-section {
+            text-align: center;
+            margin: 20px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .resend-button {
+            color: #667eea;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .resend-button:disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .timer {
+            display: inline-block;
+            margin-left: 5px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .verification-info {
+            background: #f0f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .verification-info p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .verification-info strong {
+            color: #333;
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-to-login a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-to-login a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="login-page">
+    <!-- Header -->
+    <header class="login-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">CareerWise</span>
+            </div>
+            <nav class="header-nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/login" class="nav-link">Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="otp-container">
+        <div class="otp-header">
+            <h1>📱 Verify Your Account</h1>
+            <p>Enter the 6-digit code sent to your email/phone</p>
+        </div>
+
+        <div class="verification-info" id="verificationInfo">
+            <p>Code sent to: <strong id="contactInfo">Loading...</strong></p>
+        </div>
+
+        <form id="otpForm">
+            <div class="otp-input-group">
+                <input type="text" maxlength="1" class="otp-input" id="otp1" autocomplete="off">
+                <input type="text" maxlength="1" class="otp-input" id="otp2" autocomplete="off">
+                <input type="text" maxlength="1" class="otp-input" id="otp3" autocomplete="off">
+                <input type="text" maxlength="1" class="otp-input" id="otp4" autocomplete="off">
+                <input type="text" maxlength="1" class="otp-input" id="otp5" autocomplete="off">
+                <input type="text" maxlength="1" class="otp-input" id="otp6" autocomplete="off">
+            </div>
+
+            <div class="message" id="message"></div>
+
+            <button type="submit" class="btn btn-primary">Verify OTP</button>
+        </form>
+
+        <div class="resend-section">
+            <p>Didn't receive the code? 
+                <button class="resend-button" id="resendBtn">
+                    Resend Code <span class="timer" id="timer"></span>
+                </button>
+            </p>
+        </div>
+
+        <div class="back-to-login">
+            <a href="/login">← Back to Login</a>
+        </div>
+    </div>
+
+    <script src="/js/verify-otp.js"></script>
+</body>
+</html>

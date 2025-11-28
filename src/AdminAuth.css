@@ -1,0 +1,143 @@
+/* Admin Authentication Styles */
+
+.admin-auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0087e1 0%, #006bb3 100%);
+    padding: 20px;
+}
+
+.admin-auth-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.admin-auth-header h2 {
+    color: #0087e1;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.admin-auth-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+.admin-auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group input {
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #0087e1;
+    box-shadow: 0 0 0 3px rgba(0, 135, 225, 0.1);
+}
+
+.admin-btn-primary {
+    background: #0087e1;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.admin-btn-primary:hover {
+    background: #006bb3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 135, 225, 0.3);
+}
+
+.admin-btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.error-message {
+    background-color: #ffe6e6;
+    color: #d32f2f;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #d32f2f;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.admin-auth-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.admin-auth-footer p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.admin-link-btn {
+    background: none;
+    border: none;
+    color: #0087e1;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.admin-link-btn:hover {
+    color: #006bb3;
+    text-decoration: underline;
+}

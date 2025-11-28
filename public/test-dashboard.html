@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        .test-box {
+            background: red;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">TEST 1: If you see this, HTML is rendering</div>
+    <div class="test-box" style="background: blue;">TEST 2: CSS is working</div>
+    <div class="test-box" style="background: green;" id="jsTest">TEST 3: Waiting for JavaScript...</div>
+    
+    <script>
+        document.getElementById('jsTest').textContent = 'TEST 3: JavaScript is working!';
+        console.log('Test dashboard loaded successfully');
+    </script>
+</body>
+</html>

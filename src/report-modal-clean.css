@@ -1,0 +1,98 @@
+/* Clean and professional report modal styles */
+.report-modal-clean {
+  max-width: 700px !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.10) !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.report-modal-body-clean {
+  padding: 40px 36px 32px 36px !important;
+  background: #fff !important;
+  border-radius: 18px !important;
+  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.report-modal-body-clean .report-section {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 24px 28px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  margin-bottom: 0;
+}
+
+.report-modal-body-clean .report-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.report-modal-body-clean .stat-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 18px 12px;
+  text-align: center;
+}
+
+.report-modal-body-clean .stat-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.report-modal-body-clean .stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.report-modal-body-clean .report-table-section {
+  margin-top: 18px;
+}
+
+.report-modal-body-clean .report-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+
+.report-modal-body-clean .report-table th,
+.report-modal-body-clean .report-table td {
+  padding: 12px 10px;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.report-modal-body-clean .report-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: #374151;
+}
+
+.report-modal-body-clean .report-table tr:last-child td {
+  border-bottom: none;
+}
+
+.report-modal-body-clean h3, .report-modal-body-clean h4 {
+  margin: 0 0 12px 0;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.report-modal-body-clean .loading-state, .report-modal-body-clean .empty-state {
+  text-align: center;
+  color: #6b7280;
+  font-size: 16px;
+  padding: 32px 0;
+}

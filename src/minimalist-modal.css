@@ -1,0 +1,132 @@
+.btn-message {
+    display: inline-flex !important;
+    z-index: 1000 !important;
+    position: relative !important;
+    border: 2px solid #16a34a !important;
+    box-shadow: 0 2px 8px rgba(34,197,94,0.08) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.applicant-modal .profile-actions {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 100 !important;
+    position: relative !important;
+}
+/* Ensure profile-actions area is visible and button stands out */
+.applicant-modal .profile-actions {
+    background: #fff !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    border-radius: 12px;
+    padding: 16px 0 8px 0;
+    z-index: 10;
+}
+/* Make the Send Message button green */
+.btn-message {
+    background: #22c55e !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: background 0.2s;
+}
+.btn-message:hover, .btn-message:focus {
+    background: #16a34a !important;
+    color: #fff !important;
+}
+/* Remove blue border/accent from profile-section */
+.applicant-modal .profile-section,
+.applicant-modal .profile-section *,
+.applicant-modal .profile-section::before,
+.applicant-modal .profile-section::after {
+    border: none !important;
+    border-left: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.applicant-modal {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE 10+ */
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+.applicant-modal::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+    background: transparent !important;
+}
+.applicant-modal::-webkit-scrollbar-thumb {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+.applicant-modal::-webkit-scrollbar-track {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Remove blue left border from info-item/info-grid */
+.applicant-modal .info-item,
+.applicant-modal .info-grid {
+    border-left: none !important;
+    box-shadow: none !important;
+}
+/* Minimalist and transparent modal for applicant profile */
+
+.minimalist-modal {
+    background: #fff !important;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.08) !important;
+    border-radius: 18px !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.minimalist-modal-body {
+    padding: 32px 32px 24px 32px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+/* Hide scrollbar for applicant profile modal */
+.applicant-modal {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE 10+ */
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+.applicant-modal::-webkit-scrollbar {
+    width: 0 !important;
+    background: transparent !important; /* Chrome/Safari/Webkit */
+}
+/* Remove blue focus ring or highlight */
+.applicant-modal:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Remove section backgrounds for minimalism */
+.applicant-modal .profile-section {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 16px 0 0 0 !important;
+}
+
+/* Remove section headers for extra minimalism */
+.applicant-modal .profile-section h3 {
+    font-size: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Remove borders and extra lines */
+.applicant-modal .info-grid, .applicant-modal .timeline-item, .applicant-modal .job-applied, .applicant-modal .cover-letter {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}

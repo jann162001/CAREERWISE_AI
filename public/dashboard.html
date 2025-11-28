@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CareerWise</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        /* Inline styles to ensure visibility */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+        }
+        
+        .dashboard-layout {
+            display: flex !important;
+            min-height: 100vh;
+            background: #f5f7fa;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            background: #f5f7fa;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: red; padding: 20px; background: yellow;">DASHBOARD TEST - If you see this, HTML is loading</h1>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>💼 CareerWise</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                    <span class="nav-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#profile" class="nav-item" data-page="profile">
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="#jobs" class="nav-item" data-page="jobs">
+                    <span class="nav-icon">💼</span>
+                    <span>Jobs</span>
+                </a>
+                <a href="#career-guidance" class="nav-item" data-page="career-guidance">
+                    <span class="nav-icon">🧭</span>
+                    <span>Career Guidance</span>
+                </a>
+                <a href="#resume" class="nav-item" data-page="resume">
+                    <span class="nav-icon">📄</span>
+                    <span>Resume</span>
+                </a>
+                <a href="#messages" class="nav-item" data-page="messages">
+                    <span class="nav-icon">✉️</span>
+                    <span>Messages</span>
+                    <span class="badge">3</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navigation Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">☰</button>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <span>🔍</span>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                    <div class="notifications">
+                        <span>🔔</span>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="user-menu">
+                        <span class="user-avatar">👤</span>
+                        <span id="userName">Loading...</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-wrapper">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page-content active">
+                    <div class="welcome-card">
+                        <h2>Welcome back, <span id="userNameDisplay">User</span>! 👋</h2>
+                        <p>Here's what's happening with your career journey today.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #667eea;">💼</div>
+                            <div class="stat-info">
+                                <h3>12</h3>
+                                <p>Applications</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #f093fb;">👁️</div>
+                            <div class="stat-info">
+                                <h3>28</h3>
+                                <p>Profile Views</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #4facfe;">✓</div>
+                            <div class="stat-info">
+                                <h3>5</h3>
+                                <p>Interviews</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #43e97b;">⭐</div>
+                            <div class="stat-info">
+                                <h3>3</h3>
+                                <p>Saved Jobs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dashboard-section">
+                            <h3>Recent Applications</h3>
+                            <div class="application-list">
+                                <div class="application-item">
+                                    <div>
+                                        <div class="app-company">Tech Corp</div>
+                                        <div class="app-position">Senior Developer</div>
+                                    </div>
+                                    <span class="app-status pending">Pending</span>
+                                </div>
+                                <div class="application-item">
+                                    <div>
+                                        <div class="app-company">Innovation Inc</div>
+                                        <div class="app-position">Product Manager</div>
+                                    </div>
+                                    <span class="app-status interview">Interview</span>
+                                </div>
+                                <div class="application-item">
+                                    <div>
+                                        <div class="app-company">StartUp Co</div>
+                                        <div class="app-position">UX Designer</div>
+                                    </div>
+                                    <span class="app-status pending">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-section">
+                            <h3>Recommended Jobs</h3>
+                            <div class="job-list">
+                                <div class="job-item">
+                                    <h4>Full Stack Developer</h4>
+                                    <p>TechSolutions Ltd</p>
+                                    <span class="job-tag">Remote</span>
+                                </div>
+                                <div class="job-item">
+                                    <h4>UI/UX Designer</h4>
+                                    <p>Creative Agency</p>
+                                    <span class="job-tag">On-site</span>
+                                </div>
+                                <div class="job-item">
+                                    <h4>Data Analyst</h4>
+                                    <p>Data Insights Co</p>
+                                    <span class="job-tag">Hybrid</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Page -->
+                <div id="profile-page" class="page-content">
+                    <div class="profile-header">
+                        <h2>My Profile</h2>
+                        <button class="btn btn-primary">Edit Profile</button>
+                    </div>
+                    <div class="profile-content">
+                        <div class="profile-card">
+                            <div class="profile-avatar-large">
+                                <span style="font-size: 80px;">👤</span>
+                            </div>
+                            <h3 id="profileName">User Name</h3>
+                            <p id="profileEmail">user@email.com</p>
+                            
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Username:</label>
+                                    <span id="userUsername">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email:</label>
+                                    <span id="userEmail">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Member Since:</label>
+                                    <span id="userCreatedAt">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Full Name:</label>
+                                    <span id="userFullName">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jobs Page -->
+                <div id="jobs-page" class="page-content">
+                    <h2>Job Opportunities</h2>
+                    <p>Explore job opportunities tailored for you.</p>
+                </div>
+
+                <!-- Career Guidance Page -->
+                <div id="career-guidance-page" class="page-content">
+                    <h2>Career Guidance</h2>
+                    <p>Get expert advice to advance your career.</p>
+                </div>
+
+                <!-- Resume Page -->
+                <div id="resume-page" class="page-content">
+                    <h2>My Resume</h2>
+                    <p>Build and manage your professional resume.</p>
+                </div>
+
+                <!-- Messages Page -->
+                <div id="messages-page" class="page-content">
+                    <h2>Messages</h2>
+                    <p>View and manage your messages.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-briefcase"></i> CareerWise</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#profile" class="nav-item" data-page="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="#jobs" class="nav-item" data-page="jobs">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Jobs</span>
+                </a>
+                <a href="#career-guidance" class="nav-item" data-page="career-guidance">
+                    <i class="fas fa-compass"></i>
+                    <span>Career Guidance</span>
+                </a>
+                <a href="#resume" class="nav-item" data-page="resume">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Resume</span>
+                </a>
+                <a href="#messages" class="nav-item" data-page="messages">
+                    <i class="fas fa-envelope"></i>
+                    <span>Messages</span>
+                    <span class="badge">3</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navigation Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="user-menu">
+                        <img src="https://ui-avatars.com/api/?name=User&background=667eea&color=fff" alt="User" class="user-avatar">
+                        <span id="userName">Loading...</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-wrapper">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page-content active">
+                    <div class="welcome-card">
+                        <h2>Welcome back, <span id="userNameDisplay">User</span>! 👋</h2>
+                        <p>Here's what's happening with your career journey today.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #667eea;">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>12</h3>
+                                <p>Applications</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #f093fb;">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>28</h3>
+                                <p>Profile Views</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #4facfe;">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>5</h3>
+                                <p>Interviews</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: #43e97b;">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>3</h3>
+                                <p>Saved Jobs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dashboard-section">
+                            <h3>Recent Applications</h3>
+                            <div class="application-list">
+                                <div class="application-item">
+                                    <div class="app-company">Tech Corp</div>
+                                    <div class="app-position">Senior Developer</div>
+                                    <span class="app-status pending">Pending</span>
+                                </div>
+                                <div class="application-item">
+                                    <div class="app-company">Innovation Inc</div>
+                                    <div class="app-position">Product Manager</div>
+                                    <span class="app-status interview">Interview</span>
+                                </div>
+                                <div class="application-item">
+                                    <div class="app-company">StartUp Co</div>
+                                    <div class="app-position">UX Designer</div>
+                                    <span class="app-status pending">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-section">
+                            <h3>Recommended Jobs</h3>
+                            <div class="job-list">
+                                <div class="job-item">
+                                    <h4>Full Stack Developer</h4>
+                                    <p>TechSolutions Ltd</p>
+                                    <span class="job-tag">Remote</span>
+                                </div>
+                                <div class="job-item">
+                                    <h4>UI/UX Designer</h4>
+                                    <p>Creative Agency</p>
+                                    <span class="job-tag">On-site</span>
+                                </div>
+                                <div class="job-item">
+                                    <h4>Data Analyst</h4>
+                                    <p>Data Insights Co</p>
+                                    <span class="job-tag">Hybrid</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Page -->
+                <div id="profile-page" class="page-content">
+                    <div class="profile-header">
+                        <h2>My Profile</h2>
+                        <button class="btn btn-primary">Edit Profile</button>
+                    </div>
+                    <div class="profile-content">
+                        <div class="profile-card">
+                            <div class="profile-avatar-large">
+                                <img src="https://ui-avatars.com/api/?name=User&size=120&background=667eea&color=fff" alt="User">
+                            </div>
+                            <h3 id="profileName">User Name</h3>
+                            <p id="profileEmail">user@email.com</p>
+                            
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Username:</label>
+                                    <span id="userUsername">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email:</label>
+                                    <span id="userEmail">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Member Since:</label>
+                                    <span id="userCreatedAt">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Full Name:</label>
+                                    <span id="userFullName">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jobs Page -->
+                <div id="jobs-page" class="page-content">
+                    <h2>Job Opportunities</h2>
+                    <p>Explore job opportunities tailored for you.</p>
+                </div>
+
+                <!-- Career Guidance Page -->
+                <div id="career-guidance-page" class="page-content">
+                    <h2>Career Guidance</h2>
+                    <p>Get expert advice to advance your career.</p>
+                </div>
+
+                <!-- Resume Page -->
+                <div id="resume-page" class="page-content">
+                    <h2>My Resume</h2>
+                    <p>Build and manage your professional resume.</p>
+                </div>
+
+                <!-- Messages Page -->
+                <div id="messages-page" class="page-content">
+                    <h2>Messages</h2>
+                    <p>View and manage your messages.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
