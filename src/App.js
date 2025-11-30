@@ -18,6 +18,9 @@ function App() {
   });
   const [message, setMessage] = useState({ text: '', type: '' });
 
+  // Use environment variable for API base URL
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -29,7 +32,7 @@ function App() {
     // Check if Google OAuth is configured
     if (!process.env.REACT_APP_GOOGLE_ENABLED) {
       // Redirect to Google OAuth
-      window.location.href = 'http://localhost:3000/api/auth/google';
+      window.location.href = `${API_URL}/auth/google`;
     } else {
       setMessage({ 
         text: 'Google Sign-In is not configured yet. Please use email/password or OTP login.', 
@@ -48,7 +51,7 @@ function App() {
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/auth/request-otp-login', {
+      const response = await fetch(`${API_URL}/auth/request-otp-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier })
@@ -82,7 +85,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

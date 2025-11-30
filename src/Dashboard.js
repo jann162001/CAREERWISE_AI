@@ -10,6 +10,8 @@ import './CareerGuidance.css';
 
 function Dashboard() {
   // Backend-powered Career Path Suggestions
+  // Use environment variable for API base URL
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
   const [careerPathSuggestions, setCareerPathSuggestions] = useState([]);
   const [loadingCareerPaths, setLoadingCareerPaths] = useState(false);
   // State for showing the resume analyzer
@@ -165,7 +167,7 @@ function Dashboard() {
         // Gather user skills and education from profile
         const skills = (profile?.skills || []).map(s => s.name);
         const education = (profile?.education || []).map(e => e.fieldOfStudy);
-        const res = await fetch(`/api/career-paths/${field}/personalized`, {
+        const res = await fetch(`${API_URL}/career-paths/${field}/personalized`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ skills, education })
@@ -267,7 +269,7 @@ function Dashboard() {
       }
 
       // Then try to fetch fresh data from server
-      const response = await fetch('http://localhost:3000/api/auth/user', {
+      const response = await fetch(`${API_URL}/auth/user`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -295,7 +297,7 @@ function Dashboard() {
   const fetchProfile = async () => {
     try {
       console.log('Fetching profile...');
-      const response = await fetch('http://localhost:3000/api/profiles/me', {
+      const response = await fetch(`${API_URL}/profiles/me`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -314,7 +316,7 @@ function Dashboard() {
 
   const fetchJobMatches = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/jobs/matches/count', {
+      const response = await fetch(`${API_URL}/jobs/matches/count`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -329,7 +331,7 @@ function Dashboard() {
 
   const fetchSavedJobsCount = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/jobs/saved/count', {
+      const response = await fetch(`${API_URL}/jobs/saved/count`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -346,7 +348,7 @@ function Dashboard() {
     if (!user?.id) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/applications/user/${user.id}`, {
+      const response = await fetch(`${API_URL}/applications/user/${user.id}`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -401,7 +403,7 @@ function Dashboard() {
     
     try {
       console.log('📊 Fetching profile views count for user:', user.id);
-      const response = await fetch(`http://localhost:3000/api/profile-views/user/${user.id}/count`, {
+      const response = await fetch(`${API_URL}/profile-views/user/${user.id}/count`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -421,7 +423,7 @@ function Dashboard() {
     
     setLoadingProfileViews(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/profile-views/user/${user.id}`, {
+      const response = await fetch(`${API_URL}/profile-views/user/${user.id}`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -441,7 +443,7 @@ function Dashboard() {
     
     try {
       console.log('📊 Fetching interviews count for user:', user.id);
-      const response = await fetch(`http://localhost:3000/api/interviews/user/${user.id}/count`, {
+      const response = await fetch(`${API_URL}/interviews/user/${user.id}/count`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -461,7 +463,7 @@ function Dashboard() {
     
     setLoadingInterviews(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/interviews/user/${user.id}`, {
+      const response = await fetch(`${API_URL}/interviews/user/${user.id}`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -492,7 +494,7 @@ function Dashboard() {
     // Instantly cancel application without confirmation
 
     try {
-      const response = await fetch(`http://localhost:3000/api/applications/${applicationId}/withdraw`, {
+      const response = await fetch(`${API_URL}/applications/${applicationId}/withdraw`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -518,7 +520,7 @@ function Dashboard() {
   const fetchMatchedJobs = async () => {
     setLoadingMatches(true);
     try {
-      const response = await fetch('http://localhost:3000/api/jobs/matches/list', {
+      const response = await fetch(`${API_URL}/jobs/matches/list`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -548,7 +550,7 @@ function Dashboard() {
   const fetchSavedJobsList = async () => {
     setLoadingSavedJobs(true);
     try {
-      const response = await fetch('http://localhost:3000/api/jobs/saved/list', {
+      const response = await fetch(`${API_URL}/jobs/saved/list`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -577,7 +579,7 @@ function Dashboard() {
 
   const handleUnsaveJob = async (jobId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/jobs/${jobId}/save`, {
+      const response = await fetch(`${API_URL}/jobs/${jobId}/save`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -603,7 +605,7 @@ function Dashboard() {
       if (isSaved) {
         // Unsave the job
         console.log('🗑️ Attempting to unsave job...');
-        const response = await fetch(`http://localhost:3000/api/jobs/${jobId}/save`, {
+        const response = await fetch(`${API_URL}/jobs/${jobId}/save`, {
           method: 'DELETE',
           credentials: 'include'
         });
@@ -620,7 +622,7 @@ function Dashboard() {
       } else {
         // Save the job
         console.log('💾 Attempting to save job...');
-        const response = await fetch(`http://localhost:3000/api/jobs/${jobId}/save`, {
+        const response = await fetch(`${API_URL}/jobs/${jobId}/save`, {
           method: 'POST',
           credentials: 'include'
         });
@@ -687,7 +689,7 @@ function Dashboard() {
 
       console.log('Uploading resume for user ID:', user.id);
 
-      const response = await fetch('http://localhost:3000/api/profiles/upload-resume', {
+      const response = await fetch(`${API_URL}/profiles/upload-resume`, {
         method: 'POST',
         credentials: 'include',
         body: formData
@@ -722,7 +724,7 @@ function Dashboard() {
     setLoadingGuidance(true);
     try {
       console.log('Fetching career guidance...');
-      const response = await fetch('http://localhost:3000/api/profiles/career-guidance', {
+      const response = await fetch(`${API_URL}/profiles/career-guidance`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -776,7 +778,7 @@ function Dashboard() {
     if (!user?.id) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/messages/conversations/${user.id}?userType=User`, {
+      const response = await fetch(`${API_URL}/messages/conversations/${user.id}?userType=User`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -801,7 +803,7 @@ function Dashboard() {
     
     // Mark messages as read
     try {
-      await fetch(`http://localhost:3000/api/messages/conversation/${conversation._id}/read`, {
+      await fetch(`${API_URL}/messages/conversation/${conversation._id}/read`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -818,7 +820,7 @@ function Dashboard() {
     
     setLoadingMessages(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/messages/conversation/${activeConversation._id}/send`, {
+      const response = await fetch(`${API_URL}/messages/conversation/${activeConversation._id}/send`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -866,7 +868,7 @@ function Dashboard() {
       formData.append('jobId', selectedJob._id);
       formData.append('resume', applicationResumeFile);
 
-      const response = await fetch('http://localhost:3000/api/applications/apply', {
+      const response = await fetch(`${API_URL}/applications/apply`, {
         method: 'POST',
         credentials: 'include',
         body: formData
@@ -897,7 +899,7 @@ function Dashboard() {
     setLoadingJobs(true);
     try {
       // Fetch with higher limit to get more jobs
-      const response = await fetch('http://localhost:3000/api/jobs/all?limit=100', {
+      const response = await fetch(`${API_URL}/jobs/all?limit=100`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -975,7 +977,7 @@ function Dashboard() {
 
   const fetchSavedJobIds = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/jobs/saved/list', {
+      const response = await fetch(`${API_URL}/jobs/saved/list`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -991,7 +993,7 @@ function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch('http://localhost:3000/api/auth/logout', {
+      await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });
