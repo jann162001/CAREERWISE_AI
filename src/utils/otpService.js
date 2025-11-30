@@ -4,15 +4,13 @@ const OTP = require('../models/OTP');
 
 // Configure email transporter (for localhost testing, use Ethereal Email or your Gmail)
 const createTransporter = () => {
-    // For development/testing on localhost, we'll use console logging
-    // In production, configure with real SMTP settings
-    return nodemailer.createTransporter({
+    return nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
         secure: false,
         auth: {
-            user: process.env.EMAIL_USER || 'your-email@gmail.com', // Add to .env
-            pass: process.env.EMAIL_PASSWORD || 'your-app-password' // Add to .env (use App Password for Gmail)
+            user: process.env.EMAIL_USER || 'your-email@gmail.com',
+            pass: process.env.EMAIL_PASSWORD || 'your-app-password'
         }
     });
 };
@@ -73,15 +71,14 @@ const sendEmailOTP = async (email, otp, purpose) => {
             </html>
         `;
 
-        // For localhost development, log to console instead of sending
-        if (process.env.NODE_ENV === 'development' || !process.env.EMAIL_USER) {
-            console.log('📧 [DEV MODE] Email OTP would be sent to:', email);
+        // Always send email if EMAIL_USER is set
+        if (!process.env.EMAIL_USER) {
+            console.log('📧 [NO EMAIL_USER] OTP would be sent to:', email);
             console.log('📧 OTP Code:', otp);
             console.log('📧 Purpose:', purpose);
-            return { success: true, message: 'OTP logged to console (dev mode)' };
+            return { success: true, message: 'OTP logged to console (no EMAIL_USER)' };
         }
 
-        // Send actual email in production
         await transporter.sendMail({
             from: '"CareerWise" <noreply@careerwise.com>',
             to: email,

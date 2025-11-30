@@ -14,7 +14,7 @@ function AdminApp() {
 
     const checkAdminAuth = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/admin/current', {
+            const response = await fetch('http://localhost:3001/api/admin/current', {
                 credentials: 'include'
             });
             const data = await response.json();

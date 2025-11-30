@@ -11,7 +11,7 @@ import './CareerGuidance.css';
 function Dashboard() {
   // Backend-powered Career Path Suggestions
   // Use environment variable for API base URL
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
   const [careerPathSuggestions, setCareerPathSuggestions] = useState([]);
   const [loadingCareerPaths, setLoadingCareerPaths] = useState(false);
   // State for showing the resume analyzer
@@ -1372,7 +1372,7 @@ function Dashboard() {
                 <div className="profile-sidebar-photo">
                   {profile?.profilePicture ? (
                     <img 
-                      src={`http://localhost:3000${profile.profilePicture}`} 
+                      src={`http://localhost:3001${profile.profilePicture}`} 
                       alt="Profile" 
                       className="sidebar-profile-picture"
                     />
@@ -1553,7 +1553,7 @@ function Dashboard() {
                             </div>
                             <div className="certificate-actions-inline">
                               <a 
-                                href={`http://localhost:3000${cert.fileUrl}`} 
+                                href={`http://localhost:3001${cert.fileUrl}`} 
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn-view-cert-inline"
@@ -1561,7 +1561,7 @@ function Dashboard() {
                                 👁️ View
                               </a>
                               <a 
-                                href={`http://localhost:3000${cert.fileUrl}`} 
+                                href={`http://localhost:3001${cert.fileUrl}`} 
                                 download
                                 className="btn-download-cert-inline"
                               >
@@ -1879,7 +1879,7 @@ function Dashboard() {
                                 <div className="dropdown-menu">
                                   {app.resume && (
                                     <a 
-                                      href={`http://localhost:3000${app.resume.fileUrl}`} 
+                                      href={`http://localhost:3001${app.resume.fileUrl}`} 
                                       target="_blank" 
                                       rel="noopener noreferrer"
                                       className="dropdown-item"
@@ -1950,7 +1950,7 @@ function Dashboard() {
                         try {
                           const formData = new FormData();
                           formData.append('resumeFile', file);
-                          const res = await fetch('http://localhost:3000/api/analyze', {
+                          const res = await fetch('http://localhost:3001/api/analyze', {
                             method: 'POST',
                             body: formData
                           });
@@ -2013,7 +2013,7 @@ function Dashboard() {
                   {profile?.resume?.fileUrl && (
                     <>
                       <iframe
-                        src={`http://localhost:3000${profile.resume.fileUrl}`}
+                        src={`http://localhost:3001${profile.resume.fileUrl}`}
                         title="Resume PDF"
                         style={{
                           width: '100%',
@@ -2153,19 +2153,26 @@ function Dashboard() {
                       <h3>Job Recommendations</h3>
                     </div>
                     <div className="recommendations-list">
-                      {Array.isArray(careerGuidance?.jobRecommendations) && careerGuidance.jobRecommendations.length > 0 ? (
-                        careerGuidance.jobRecommendations.map((job, index) => (
+                      {matchedJobs && matchedJobs.length > 0 ? (
+                        matchedJobs.map((job, index) => (
                           <div key={index} className="recommendation-item">
                             <div className="recommendation-header">
-                              <h4>{job.title}</h4>
+                              <h4>{job.jobTitle || job.title}</h4>
                               {job.company && <span className="recommendation-company">{job.company}</span>}
-                              <span className="match-badge">{job.matchPercentage}% Match</span>
+                              {job.matchPercentage || job.matchScore ? (
+                                <span className="match-badge">{job.matchPercentage ? `${job.matchPercentage}% Match` : `${job.matchScore}% Match`}</span>
+                              ) : null}
                             </div>
-                            <p className="recommendation-reason">{job.reason}</p>
+                            <p className="recommendation-reason">Matched using your profile and preferences</p>
                             <div className="recommendation-skills">
-                              {job.requiredSkills && job.requiredSkills.slice(0, 3).map((skill, i) => (
-                                <span key={i} className="skill-chip">{skill}</span>
-                              ))}
+                              <div className="skills-tags">
+                                {((job.requiredSkills && job.requiredSkills.length > 0 ? job.requiredSkills : (job.skills || job.tags || [])).slice(0, 5)).map((skill, i) => (
+                                  <span key={i} className="skill-tag">{typeof skill === 'object' ? skill.name : skill}</span>
+                                ))}
+                                {job.requiredSkills && job.requiredSkills.length > 5 && (
+                                  <span className="skill-tag">+{job.requiredSkills.length - 5} more</span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))
@@ -2623,7 +2630,7 @@ function Dashboard() {
                                 <div className="dropdown-menu">
                                   {app.resume && (
                                     <a 
-                                      href={`http://localhost:3000${app.resume.fileUrl}`} 
+                                      href={`http://localhost:3001${app.resume.fileUrl}`} 
                                       target="_blank" 
                                       rel="noopener noreferrer"
                                       className="dropdown-item"

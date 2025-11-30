@@ -38,7 +38,7 @@ function AdminSignup({ onSignupSuccess, onSwitchToLogin }) {
         setLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3000/api/admin/signup', {
+            const response = await fetch('http://localhost:3001/api/admin/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

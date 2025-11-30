@@ -106,7 +106,7 @@ function AdminDashboard({ onLogout }) {
         if (!adminData?.id) return;
         
         try {
-            const response = await fetch(`http://localhost:3000/api/messages/conversations/${adminData.id}?userType=Admin`);
+            const response = await fetch(`http://localhost:3001/api/messages/conversations/${adminData.id}?userType=Admin`);
             const data = await response.json();
             setConversations(data);
         } catch (error) {
@@ -118,7 +118,7 @@ function AdminDashboard({ onLogout }) {
         if (!adminData?.id) return;
         
         try {
-            const response = await fetch('http://localhost:3000/api/messages/start', {
+            const response = await fetch('http://localhost:3001/api/messages/start', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -175,7 +175,7 @@ function AdminDashboard({ onLogout }) {
             }
 
             // Then try to fetch fresh data from server
-            const response = await fetch('http://localhost:3000/api/admin/current', {
+            const response = await fetch('http://localhost:3001/api/admin/current', {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -199,7 +199,7 @@ function AdminDashboard({ onLogout }) {
 
     const fetchStats = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/jobs/stats/overview', {
+            const response = await fetch('http://localhost:3001/api/jobs/stats/overview', {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -213,7 +213,7 @@ function AdminDashboard({ onLogout }) {
 
     const fetchJobs = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/jobs/all?limit=100', {
+            const response = await fetch('http://localhost:3001/api/jobs/all?limit=100', {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -239,7 +239,7 @@ function AdminDashboard({ onLogout }) {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/jobs/${jobId}`, {
+            const response = await fetch(`http://localhost:3001/api/jobs/${jobId}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });
@@ -260,7 +260,7 @@ function AdminDashboard({ onLogout }) {
 
     const handleUpdateJobStatus = async (jobId, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/jobs/${jobId}`, {
+            const response = await fetch(`http://localhost:3001/api/jobs/${jobId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -339,7 +339,7 @@ function AdminDashboard({ onLogout }) {
                     : [],
             };
             try {
-                const response = await fetch(`http://localhost:3000/api/jobs/${editingJob._id}`, {
+                const response = await fetch(`http://localhost:3001/api/jobs/${editingJob._id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -380,7 +380,7 @@ function AdminDashboard({ onLogout }) {
             console.log('Submitting job with data:', jobFormData);
             
             try {
-                const response = await fetch('http://localhost:3000/api/jobs/create', {
+                const response = await fetch('http://localhost:3001/api/jobs/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -464,7 +464,7 @@ function AdminDashboard({ onLogout }) {
 
     const handleLogout = async () => {
         try {
-            await fetch('http://localhost:3000/api/admin/logout', {
+            await fetch('http://localhost:3001/api/admin/logout', {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -482,7 +482,7 @@ function AdminDashboard({ onLogout }) {
     // Applicant Management Functions
     const fetchApplications = useCallback(async () => {
         try {
-            const url = new URL('http://localhost:3000/api/applications/all');
+            const url = new URL('http://localhost:3001/api/applications/all');
             if (applicantFilter !== 'all') {
                 url.searchParams.append('status', applicantFilter);
             }
@@ -520,7 +520,7 @@ function AdminDashboard({ onLogout }) {
 
     const fetchApplicationStats = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/applications/stats/summary', {
+            const response = await fetch('http://localhost:3001/api/applications/stats/summary', {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -532,7 +532,7 @@ function AdminDashboard({ onLogout }) {
 
     const handleStatusChange = async (applicationId, newStatus) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/applications/${applicationId}/status`, {
+            const response = await fetch(`http://localhost:3001/api/applications/${applicationId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -548,7 +548,7 @@ function AdminDashboard({ onLogout }) {
                     const application = applications.find(app => app._id === applicationId);
                     if (application) {
                         try {
-                            await fetch('http://localhost:3000/api/interviews/schedule', {
+                            await fetch('http://localhost:3001/api/interviews/schedule', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 credentials: 'include',
@@ -583,7 +583,7 @@ function AdminDashboard({ onLogout }) {
     const handleViewApplicant = async (application) => {
         try {
             console.log('🔍 Fetching application details for:', application._id);
-            const response = await fetch(`http://localhost:3000/api/applications/${application._id}`, {
+            const response = await fetch(`http://localhost:3001/api/applications/${application._id}`, {
                 credentials: 'include'
             });
             const data = await response.json();
@@ -604,7 +604,7 @@ function AdminDashboard({ onLogout }) {
                     console.log('🆔 Admin ID:', adminData.id);
                     console.log('👤 Profile Owner ID:', data.user._id);
                     
-                    const trackResponse = await fetch('http://localhost:3000/api/profile-views/track', {
+                    const trackResponse = await fetch('http://localhost:3001/api/profile-views/track', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
@@ -633,7 +633,7 @@ function AdminDashboard({ onLogout }) {
 
     const handleSubmitInterview = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/applications/${selectedApplication._id}/interview`, {
+            const response = await fetch(`http://localhost:3001/api/applications/${selectedApplication._id}/interview`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -661,7 +661,7 @@ function AdminDashboard({ onLogout }) {
         if (!noteContent.trim()) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/applications/${selectedApplication._id}/notes`, {
+            const response = await fetch(`http://localhost:3001/api/applications/${selectedApplication._id}/notes`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -685,7 +685,7 @@ function AdminDashboard({ onLogout }) {
 
     const handleExportApplications = async () => {
         try {
-            window.open('http://localhost:3000/api/applications/export/csv', '_blank');
+            window.open('http://localhost:3001/api/applications/export/csv', '_blank');
         } catch (error) {
             console.error('Error exporting applications:', error);
             alert('Failed to export applications');
@@ -698,7 +698,7 @@ function AdminDashboard({ onLogout }) {
         setReportData(null);
         
         try {
-            const response = await fetch(`http://localhost:3000/api/reports/${reportType}`, {
+            const response = await fetch(`http://localhost:3001/api/reports/${reportType}`, {
                 credentials: 'include'
             });
             
@@ -720,7 +720,7 @@ function AdminDashboard({ onLogout }) {
         
         try {
             // Fetch all applications for this job
-            const response = await fetch(`http://localhost:3000/api/applications/all?jobId=${job._id}`, {
+            const response = await fetch(`http://localhost:3001/api/applications/all?jobId=${job._id}`, {
                 credentials: 'include'
             });
             
@@ -774,7 +774,7 @@ function AdminDashboard({ onLogout }) {
         
         // Mark messages as read
         try {
-            await fetch(`http://localhost:3000/api/messages/conversation/${conversation._id}/read`, {
+            await fetch(`http://localhost:3001/api/messages/conversation/${conversation._id}/read`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userType: 'Admin' })
@@ -790,7 +790,7 @@ function AdminDashboard({ onLogout }) {
         
         setLoadingMessages(true);
         try {
-            const response = await fetch(`http://localhost:3000/api/messages/conversation/${activeConversation._id}/send`, {
+            const response = await fetch(`http://localhost:3001/api/messages/conversation/${activeConversation._id}/send`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -1798,7 +1798,7 @@ function AdminDashboard({ onLogout }) {
                                                         </button>
                                                         {app.resume && (
                                                             <a 
-                                                                href={`http://localhost:3000${app.resume.fileUrl}`}
+                                                                href={`http://localhost:3001${app.resume.fileUrl}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="btn-resume"
@@ -2328,7 +2328,7 @@ function AdminDashboard({ onLogout }) {
                                                 
                                                 if (userId && adminData?.id) {
                                                     try {
-                                                        const response = await fetch('http://localhost:3000/api/messages/start', {
+                                                        const response = await fetch('http://localhost:3001/api/messages/start', {
                                                             method: 'POST',
                                                             headers: { 'Content-Type': 'application/json' },
                                                             body: JSON.stringify({
@@ -3225,7 +3225,7 @@ function AdminDashboard({ onLogout }) {
                                                 </button>
                                                 {app.resume && (
                                                     <a 
-                                                        href={`http://localhost:3000${app.resume.fileUrl}`}
+                                                        href={`http://localhost:3001${app.resume.fileUrl}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="btn-view-resume"

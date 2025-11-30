@@ -1,9 +1,11 @@
+
 import React, { useState } from 'react';
 import './App.css';
 import Dashboard from './Dashboard';
 import ProfileCreation from './ProfileCreation';
 
 function App() {
+
   const [isLogin, setIsLogin] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfileCreation, setShowProfileCreation] = useState(false);
@@ -17,9 +19,13 @@ function App() {
     agreeToTerms: false
   });
   const [message, setMessage] = useState({ text: '', type: '' });
+  // OTP signup state
+  const [otpStep, setOtpStep] = useState(false); // true if waiting for OTP
+  const [otpValue, setOtpValue] = useState('');
+  const [signupPayload, setSignupPayload] = useState(null); // store signup data until OTP is verified
 
   // Use environment variable for API base URL
-  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
   const handleChange = (e) => {
     setFormData({
@@ -110,73 +116,115 @@ function App() {
     }
   };
 
+  // Signup handler with OTP verification
   const handleSignup = async (e) => {
     e.preventDefault();
     setMessage({ text: '', type: '' });
 
+    if (otpStep) {
+      // User is submitting OTP
+      if (!otpValue) {
+        setMessage({ text: 'Please enter the OTP sent to your email', type: 'error' });
+        return;
+      }
+      try {
+        const verifyRes = await fetch(`${API_URL}/auth/verify-otp-signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: signupPayload.email, otp: otpValue })
+        });
+        const verifyData = await verifyRes.json();
+        if (!verifyRes.ok || !verifyData.success) {
+          setMessage({ text: verifyData.message || 'Invalid OTP. Please try again.', type: 'error' });
+          return;
+        }
+        // OTP verified, proceed to create account
+        const signupRes = await fetch(`${API_URL}/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(signupPayload)
+        });
+        const text = await signupRes.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (jsonError) {
+          setMessage({ text: `Server error: ${text.substring(0, 200)}`, type: 'error' });
+          return;
+        }
+        if (data.success) {
+          setMessage({ text: 'Account created successfully! Creating profile...', type: 'success' });
+          setTimeout(() => {
+            setShowProfileCreation(true);
+            setOtpStep(false);
+            setOtpValue('');
+            setSignupPayload(null);
+          }, 1500);
+        } else {
+          setMessage({ text: data.message || 'Signup failed', type: 'error' });
+        }
+      } catch (error) {
+        setMessage({ text: `Error: ${error.message || 'An error occurred. Please try again.'}`, type: 'error' });
+      }
+      return;
+    }
+
+    // Initial signup form validation
     if (!formData.fullName || !formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
       setMessage({ text: 'Please fill in all fields', type: 'error' });
       return;
     }
-
     if (!formData.agreeToTerms) {
       setMessage({ text: 'Please agree to the Terms & Conditions', type: 'error' });
       return;
     }
-
     if (formData.username.length < 3) {
       setMessage({ text: 'Username must be at least 3 characters', type: 'error' });
       return;
     }
-
     if (formData.password.length < 6) {
       setMessage({ text: 'Password must be at least 6 characters', type: 'error' });
       return;
     }
-
     if (formData.password !== formData.confirmPassword) {
       setMessage({ text: 'Passwords do not match', type: 'error' });
       return;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setMessage({ text: 'Please enter a valid email address', type: 'error' });
       return;
     }
 
+    // Request OTP for signup
     try {
-      const response = await fetch('http://localhost:3000/api/auth/signup', {
+      const otpRes = await fetch(`${API_URL}/auth/request-otp-signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          username: formData.username,
-          email: formData.email,
-          password: formData.password
-        })
+        body: JSON.stringify({ email: formData.email })
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessage({ text: 'Account created successfully! Creating profile...', type: 'success' });
-        setTimeout(() => {
-          setShowProfileCreation(true);
-        }, 1500);
-      } else {
-        setMessage({ text: data.message || 'Signup failed', type: 'error' });
+      const otpData = await otpRes.json();
+      if (!otpRes.ok || !otpData.success) {
+        setMessage({ text: otpData.message || 'Failed to send OTP. Please try again.', type: 'error' });
+        return;
       }
+      setMessage({ text: 'OTP sent to your email. Please enter it below to verify.', type: 'success' });
+      setOtpStep(true);
+      setSignupPayload({
+        fullName: formData.fullName,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      });
     } catch (error) {
-      console.error('Signup error details:', error);
-      setMessage({ text: `Error: ${error.message || 'An error occurred. Please try again.'}`, type: 'error' });
+      setMessage({ text: `Error: ${error.message || 'Failed to send OTP.'}`, type: 'error' });
     }
   };
 
   const handleProfileComplete = async (formDataToSend) => {
     try {
-      const response = await fetch('http://localhost:3000/api/profiles/create', {
+      const response = await fetch(`${API_URL}/profiles/create`, {
         method: 'POST',
         credentials: 'include',
         body: formDataToSend // FormData object, don't set Content-Type header
@@ -212,6 +260,7 @@ function App() {
     return <ProfileCreation onProfileComplete={handleProfileComplete} onCancel={handleProfileSkip} />;
   }
 
+  // ...existing code...
   return (
     <>
       {/* Header */}
@@ -578,6 +627,7 @@ function App() {
                 value={formData.fullName}
                 onChange={handleChange}
                 required
+                disabled={otpStep}
               />
             </div>
           )}
@@ -592,6 +642,7 @@ function App() {
               onChange={handleChange}
               required
               minLength={isLogin ? undefined : 3}
+              disabled={otpStep}
             />
             {!isLogin && <small>At least 3 characters</small>}
           </div>
@@ -606,6 +657,7 @@ function App() {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={otpStep}
               />
             </div>
           )}
@@ -620,6 +672,7 @@ function App() {
               onChange={handleChange}
               required
               minLength={isLogin ? undefined : 6}
+              disabled={otpStep}
             />
             {!isLogin && <small>At least 6 characters</small>}
           </div>
@@ -634,6 +687,7 @@ function App() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
+                disabled={otpStep}
               />
             </div>
           )}
@@ -647,9 +701,56 @@ function App() {
                   checked={formData.agreeToTerms}
                   onChange={(e) => setFormData({...formData, agreeToTerms: e.target.checked})}
                   required
+                  disabled={otpStep}
                 />
                 <span>I agree to the Terms & Conditions and Privacy Policy</span>
               </label>
+            </div>
+          )}
+          {/* OTP input for signup */}
+          {!isLogin && otpStep && (
+            <div className="form-group">
+              <label htmlFor="otp">Enter OTP sent to your email</label>
+              <input
+                type="text"
+                id="otp"
+                name="otp"
+                value={otpValue}
+                onChange={e => setOtpValue(e.target.value)}
+                required
+                maxLength={6}
+                autoFocus
+              />
+              <button type="button" className="btn btn-secondary" style={{marginTop: '8px'}} onClick={async () => {
+                // Resend OTP
+                setMessage({ text: '', type: '' });
+                try {
+                  const otpRes = await fetch(`${API_URL}/auth/request-otp-signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: signupPayload.email })
+                  });
+                  const otpData = await otpRes.json();
+                  if (!otpRes.ok || !otpData.success) {
+                    setMessage({ text: otpData.message || 'Failed to resend OTP.', type: 'error' });
+                  } else {
+                    setMessage({ text: 'OTP resent to your email.', type: 'success' });
+                  }
+                } catch (error) {
+                  setMessage({ text: `Error: ${error.message || 'Failed to resend OTP.'}`, type: 'error' });
+                }
+              }}>
+                Resend OTP
+              </button>
+              <button type="button" className="btn btn-link" style={{marginTop: '8px'}} onClick={() => {
+                // Cancel OTP step and go back to signup form
+                setOtpStep(false);
+                setOtpValue('');
+                setSignupPayload(null);
+                setMessage({ text: '', type: '' });
+              }}>
+                Cancel
+              </button>
             </div>
           )}
 
@@ -705,6 +806,5 @@ function App() {
     </>
   );
 }
-
 export default App;
 

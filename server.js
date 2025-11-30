@@ -17,6 +17,8 @@ app.use(cors({
         'http://localhost:3002',
         'http://localhost:3003',
         'http://localhost:3004',
+        'http://localhost:3006',
+        'http://localhost:3007',
         'http://localhost:3008',
         'https://careerwise-ai-3fdi.vercel.app'
     ],
