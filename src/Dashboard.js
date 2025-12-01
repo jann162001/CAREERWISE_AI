@@ -1980,7 +1980,7 @@ function Dashboard() {
                     }}
                     onClick={() => document.getElementById('resume-upload-input').click()}
                     disabled={uploadingResume}
-                  >{uploadingResume ? 'Analyzing...' : 'Upload Your Resume'}</button>
+                  />
 
                   {/* Scanner Progress UI */}
                   {uploadingResume && (

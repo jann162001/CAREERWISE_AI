@@ -20,7 +20,8 @@ app.use(cors({
         'http://localhost:3006',
         'http://localhost:3007',
         'http://localhost:3008',
-        'https://careerwise-ai-3fdi.vercel.app'
+        'https://careerwise-ai-3fdi.vercel.app',
+        'https://careerwise-ai-fscs.vercel.app'
     ],
     credentials: true
 }));
