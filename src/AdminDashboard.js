@@ -901,111 +901,106 @@ function AdminDashboard({ onLogout }) {
                             </div>
                         </div>
 
-                        {/* Application Status Overview Bar Graph */}
-                        <div className="user-activity-section" style={{marginTop: 32, marginBottom: 32}}>
-                            <h3>Application Status Overview</h3>
-                            <div className="activity-chart">
-                                <svg width="100%" height="220" viewBox="0 0 600 220">
-                                    {/* X-axis */}
-                                    <line x1="50" y1="180" x2="570" y2="180" stroke="#e5e7eb" strokeWidth="2"/>
-                                    {/* Y-axis labels */}
-                                    <text x="20" y="60" fontSize="12" fill="#6b7280">1</text>
-                                    <text x="25" y="180" fontSize="12" fill="#6b7280">0</text>
-                                    {/* Bar Graph for Statuses with minimum bar height */}
-                                    {(() => {
-                                        const statusData = [
-                                            { label: 'New', value: applicationStats.new, color: '#6366f1' },
-                                            { label: 'Under Review', value: applicationStats.underReview, color: '#3b82f6' },
-                                            { label: 'Shortlisted', value: applicationStats.shortlisted, color: '#f59e42' },
-                                            { label: 'For Interview', value: applicationStats.forInterview, color: '#06b6d4' },
-                                            { label: 'Hired', value: applicationStats.hired, color: '#10b981' },
-                                            { label: 'Rejected', value: applicationStats.rejected, color: '#ef4444' }
-                                        ];
-                                        const maxVal = Math.max(...statusData.map(s => s.value), 1);
-                                        const minBarHeight = 12; // px
-                                        return statusData.map((s, i) => {
-                                            let barHeight = (s.value / maxVal) * 120;
-                                            if (s.value === 0) barHeight = minBarHeight;
-                                            return (
-                                                <g key={s.label}>
-                                                    <rect x={70 + i * 80} y={180 - barHeight} width="40" height={barHeight} fill={s.color} rx="8" />
-                                                    <text x={90 + i * 80} y={195} fontSize="13" fill="#374151" textAnchor="middle">{s.label}</text>
-                                                    <text x={90 + i * 80} y={170 - barHeight} fontSize="14" fill="#111827" textAnchor="middle" fontWeight="bold">{s.value}</text>
-                                                </g>
-                                            );
-                                        });
-                                    })()}
-                                </svg>
+                        {/* Side-by-side Row for Bar Graph and Analytics */}
+                        <div className="dashboard-row-flex" style={{display: 'flex', gap: 32, margin: '32px 0'}}>
+                            {/* Application Status Overview Bar Graph */}
+                            <div className="user-activity-section" style={{flex: 1, minWidth: 0}}>
+                                <h3>Application Status Overview</h3>
+                                <div className="activity-chart">
+                                    <svg width="100%" height="220" viewBox="0 0 600 220">
+                                        {/* X-axis */}
+                                        <line x1="50" y1="180" x2="570" y2="180" stroke="#e5e7eb" strokeWidth="2"/>
+                                        {/* Y-axis labels */}
+                                        <text x="20" y="60" fontSize="12" fill="#6b7280">1</text>
+                                        <text x="25" y="180" fontSize="12" fill="#6b7280">0</text>
+                                        {/* Bar Graph for Statuses with minimum bar height */}
+                                        {(() => {
+                                            const statusData = [
+                                                { label: 'New', value: applicationStats.new, color: '#6366f1' },
+                                                { label: 'Under Review', value: applicationStats.underReview, color: '#3b82f6' },
+                                                { label: 'Shortlisted', value: applicationStats.shortlisted, color: '#f59e42' },
+                                                { label: 'For Interview', value: applicationStats.forInterview, color: '#06b6d4' },
+                                                { label: 'Hired', value: applicationStats.hired, color: '#10b981' },
+                                                { label: 'Rejected', value: applicationStats.rejected, color: '#ef4444' }
+                                            ];
+                                            const maxVal = Math.max(...statusData.map(s => s.value), 1);
+                                            const minBarHeight = 12; // px
+                                            return statusData.map((s, i) => {
+                                                let barHeight = (s.value / maxVal) * 120;
+                                                if (s.value === 0) barHeight = minBarHeight;
+                                                return (
+                                                    <g key={s.label}>
+                                                        <rect x={70 + i * 80} y={180 - barHeight} width="40" height={barHeight} fill={s.color} rx="8" />
+                                                        <text x={90 + i * 80} y={195} fontSize="13" fill="#374151" textAnchor="middle">{s.label}</text>
+                                                        <text x={90 + i * 80} y={170 - barHeight} fontSize="14" fill="#111827" textAnchor="middle" fontWeight="bold">{s.value}</text>
+                                                    </g>
+                                                );
+                                            });
+                                        })()}
+                                    </svg>
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Main Content Grid */}
-                        <div className="dashboard-grid">
-                            {/* Right Column */}
-                            <div className="dashboard-right-column">
-                                {/* Reports & Analytics */}
-                                <div className="dashboard-section reports-analytics-section">
-                                    <h2 className="section-title">Reports & Analytics</h2>
-                                    
-                                    <div className="analytics-charts">
-                                        {/* Bar Chart */}
-                                        <div className="bar-chart">
-                                            <div className="chart-legend">
-                                                <span className="legend-item">
-                                                    <span className="legend-color" style={{backgroundColor: '#667eea'}}></span>
-                                                    Applications
-                                                </span>
-                                                <span className="legend-item">
-                                                    <span className="legend-color" style={{backgroundColor: '#06b6d4'}}></span>
-                                                    Views
-                                                </span>
-                                            </div>
-                                            <div className="bars-container">
-                                                {topJobs.map((job, idx) => {
-                                                    const maxVal = Math.max(...topJobs.map(j => Math.max(j.applications, j.views)), 1);
-                                                    return (
-                                                        <div key={idx} className="bar-group">
-                                                            <div className="bars">
-                                                                <div 
-                                                                    className="bar bar-applications" 
-                                                                    style={{height: `${(job.applications / maxVal) * 100}px`}}
-                                                                    title={`${job.applications} applications`}
-                                                                ></div>
-                                                                <div 
-                                                                    className="bar bar-views" 
-                                                                    style={{height: `${(job.views / maxVal) * 100}px`}}
-                                                                    title={`${job.views} views`}
-                                                                ></div>
-                                                            </div>
-                                                            <div className="bar-label">{job.title.split(' ')[0]}</div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
+                            {/* Reports & Analytics */}
+                            <div className="dashboard-section reports-analytics-section" style={{flex: 1, minWidth: 0}}>
+                                <h2 className="section-title">Reports & Analytics</h2>
+                                <div className="analytics-charts">
+                                    {/* Bar Chart */}
+                                    <div className="bar-chart">
+                                        <div className="chart-legend">
+                                            <span className="legend-item">
+                                                <span className="legend-color" style={{backgroundColor: '#667eea'}}></span>
+                                                Applications
+                                            </span>
+                                            <span className="legend-item">
+                                                <span className="legend-color" style={{backgroundColor: '#06b6d4'}}></span>
+                                                Views
+                                            </span>
                                         </div>
-                                        
-                                        {/* Donut Chart */}
-                                        <div className="donut-chart">
-                                            <svg width="120" height="120" viewBox="0 0 120 120">
-                                                <circle cx="60" cy="60" r="40" fill="none" stroke="#e5e7eb" strokeWidth="20"/>
-                                                <circle 
-                                                    cx="60" cy="60" r="40" 
-                                                    fill="none" 
-                                                    stroke="#667eea" 
-                                                    strokeWidth="20"
-                                                    strokeDasharray={`${(applications.length / (applications.length + 100)) * 251.2} 251.2`}
-                                                    transform="rotate(-90 60 60)"
-                                                />
-                                            </svg>
-                                            <div className="donut-legend">
-                                                <div className="legend-item">
-                                                    <span className="legend-dot" style={{backgroundColor: '#667eea'}}></span>
-                                                    Applications
-                                                </div>
-                                                <div className="legend-item">
-                                                    <span className="legend-dot" style={{backgroundColor: '#06b6d4'}}></span>
-                                                    Views
-                                                </div>
+                                        <div className="bars-container">
+                                            {topJobs.map((job, idx) => {
+                                                const maxVal = Math.max(...topJobs.map(j => Math.max(j.applications, j.views)), 1);
+                                                return (
+                                                    <div key={idx} className="bar-group">
+                                                        <div className="bars">
+                                                            <div 
+                                                                className="bar bar-applications" 
+                                                                style={{height: `${(job.applications / maxVal) * 100}px`}}
+                                                                title={`${job.applications} applications`}
+                                                            ></div>
+                                                            <div 
+                                                                className="bar bar-views" 
+                                                                style={{height: `${(job.views / maxVal) * 100}px`}}
+                                                                title={`${job.views} views`}
+                                                            ></div>
+                                                        </div>
+                                                        <div className="bar-label">{job.title.split(' ')[0]}</div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    {/* Donut Chart */}
+                                    <div className="donut-chart">
+                                        <svg width="120" height="120" viewBox="0 0 120 120">
+                                            <circle cx="60" cy="60" r="40" fill="none" stroke="#e5e7eb" strokeWidth="20"/>
+                                            <circle 
+                                                cx="60" cy="60" r="40" 
+                                                fill="none" 
+                                                stroke="#667eea" 
+                                                strokeWidth="20"
+                                                strokeDasharray={`${(applications.length / (applications.length + 100)) * 251.2} 251.2`}
+                                                transform="rotate(-90 60 60)"
+                                            />
+                                        </svg>
+                                        <div className="donut-legend">
+                                            <div className="legend-item">
+                                                <span className="legend-dot" style={{backgroundColor: '#667eea'}}></span>
+                                                Applications
+                                            </div>
+                                            <div className="legend-item">
+                                                <span className="legend-dot" style={{backgroundColor: '#06b6d4'}}></span>
+                                                Views
                                             </div>
                                         </div>
                                     </div>
@@ -1665,17 +1660,7 @@ function AdminDashboard({ onLogout }) {
                                 <h1>Applicant Management</h1>
                                 <p className="page-subtitle">Monitor and manage all job applications - Total: {applications.length} applicant{applications.length !== 1 ? 's' : ''}</p>
                             </div>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                <button className="btn-export" onClick={() => {
-                                    console.log('🔄 Manual refresh triggered');
-                                    fetchApplications();
-                                }}>
-                                    🔄 Refresh Data
-                                </button>
-                                <button className="btn-export" onClick={handleExportApplications}>
-                                    📊 Export to CSV
-                                </button>
-                            </div>
+                            {/* Removed Refresh Data and Export to CSV buttons as requested */}
                         </div>
 
                         {/* Statistics */}
@@ -2074,56 +2059,35 @@ function AdminDashboard({ onLogout }) {
 
     return (
         <div className="admin-dashboard">
-            <div className="admin-sidebar">
-                <div className="admin-logo">
-                    <h2>Admin Panel</h2>
+            <aside className="sidebar">
+                <div className="sidebar-header">
+                    <h2>💼 CareerWise Admin</h2>
                 </div>
-                
-                <nav className="admin-nav">
-                    <button 
-                        className={`admin-nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
-                        onClick={() => setActivePage('dashboard')}
-                    >
-                        Main Dashboard
-                    </button>
-                    <button 
-                        className={`admin-nav-link ${activePage === 'addJob' ? 'active' : ''}`}
-                        onClick={() => setActivePage('addJob')}
-                    >
-                        Add New Job
-                    </button>
-                    <button 
-                        className={`admin-nav-link ${activePage === 'viewJobs' ? 'active' : ''}`}
-                        onClick={() => setActivePage('viewJobs')}
-                    >
-                        View All Jobs
-                    </button>
-                    <button 
-                        className={`admin-nav-link ${activePage === 'monitoring' ? 'active' : ''}`}
-                        onClick={() => setActivePage('monitoring')}
-                    >
-                        Job Post Monitoring
-                    </button>
-                    <button 
-                        className={`admin-nav-link ${activePage === 'applicants' ? 'active' : ''}`}
-                        onClick={() => setActivePage('applicants')}
-                    >
-                        Applicant Management
-                    </button>
-                    <button 
-                        className={`admin-nav-link ${activePage === 'messages' ? 'active' : ''}`}
-                        onClick={() => setActivePage('messages')}
-                    >
-                        Messages
-                    </button>
-                    <button 
-                        className={`admin-nav-link ${activePage === 'reports' ? 'active' : ''}`}
-                        onClick={() => setActivePage('reports')}
-                    >
-                        Reports & Analytics
-                    </button>
+                <nav className="sidebar-nav">
+                    {[
+                        { key: 'dashboard', label: 'Main Dashboard' },
+                        { key: 'addJob', label: 'Add New Job' },
+                        { key: 'viewJobs', label: 'View All Jobs' },
+                        { key: 'monitoring', label: 'Job Post Monitoring' },
+                        { key: 'applicants', label: 'Applicant Management' },
+                        { key: 'messages', label: 'Messages' },
+                        { key: 'reports', label: 'Reports & Analytics' }
+                    ].map(page => (
+                        <div
+                            key={page.key}
+                            onClick={() => setActivePage(page.key)}
+                            className={`nav-link ${activePage === page.key ? 'active' : ''}`}
+                        >
+                            <span>{page.label}</span>
+                        </div>
+                    ))}
                 </nav>
-            </div>
+                <div className="sidebar-footer">
+                    <button onClick={handleLogout} className="logout-button">
+                        Logout
+                    </button>
+                </div>
+            </aside>
             
             <div className="admin-main">
                 <div className="admin-topbar">
@@ -2740,12 +2704,10 @@ function AdminDashboard({ onLogout }) {
             {showJobDetailsModal && selectedJobDetails && (
                 <div className="modal-overlay" onClick={() => setShowJobDetailsModal(false)}>
                     <div className="modal-content job-details-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>Job Details</h2>
+                        <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%', marginTop: 18, marginBottom: -8}}>
                             <button className="modal-close" onClick={() => setShowJobDetailsModal(false)}>×</button>
                         </div>
-                        
-                        <div className="modal-body">
+                        <div className="modal-body" style={{paddingTop: 0}}>
                             <div className="job-details-content">
                                 {/* Basic Information */}
                                 <div className="details-section">
@@ -2981,16 +2943,12 @@ function AdminDashboard({ onLogout }) {
                 <div className="modal-overlay" onClick={() => setShowReportModal(false)}>
                     <div className="modal-content matched-applicants-modal minimalist-modal report-modal-clean" onClick={(e) => e.stopPropagation()}>
                         <div className="modal-body report-modal-body-clean">
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-                                <button className="admin-btn-secondary" onClick={() => window.print()} style={{ marginRight: 8 }}>
-                                    🖨️ Print Report
-                                </button>
-                            </div>
                             {!reportData ? (
                                 <div className="loading-state">
                                     <p>Loading report data...</p>
                                 </div>
                             ) : (
+                                <>
                                 <div className="report-content">
                                     {selectedReport === 'job-performance' && (
                                         <div className="report-section">
@@ -3135,6 +3093,12 @@ function AdminDashboard({ onLogout }) {
                                         </div>
                                     )}
                                 </div>
+                                <div style={{ display: 'flex', justifyContent: 'center', marginTop: 32 }}>
+                                    <button className="admin-btn-secondary" onClick={() => window.print()}>
+                                        🖨️ Print Report
+                                    </button>
+                                </div>
+                                </>
                             )}
                         </div>
                     </div>
@@ -3145,12 +3109,11 @@ function AdminDashboard({ onLogout }) {
             {showMatchedApplicantsModal && selectedJobForMatching && (
                 <div className="modal-overlay" onClick={() => setShowMatchedApplicantsModal(false)}>
                     <div className="modal-content matched-applicants-modal" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2>Matched Applicants - {selectedJobForMatching.jobTitle}</h2>
-                            <button className="modal-close" onClick={() => setShowMatchedApplicantsModal(false)}>×</button>
+                        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: 18, marginBottom: 0, padding: '0 0 12px 0', position: 'relative'}}>
+                            <button className="modal-close" style={{position: 'absolute', top: 0, right: 0}} onClick={() => setShowMatchedApplicantsModal(false)}>×</button>
+                            <h2 style={{margin: 0, fontWeight: 700, fontSize: 24, color: '#222', letterSpacing: '-1px', textAlign: 'center', width: '100%'}}>Matched Applicants - {selectedJobForMatching.jobTitle}</h2>
                         </div>
-                        
-                        <div className="modal-body">
+                        <div className="modal-body" style={{paddingTop: 0}}>
                             {matchedApplicants.length === 0 ? (
                                 <div className="empty-state">
                                     <div className="empty-icon">🔍</div>

@@ -95,7 +95,7 @@ router.post('/analyze', upload.single('resumeFile'), async (req, res) => {
       skills: analysisJson.skills
     });
 
-    res.json({ id: doc._id, analysis: analysisJson });
+    res.json({ id: doc._id, analysis: analysisJson, resumeText });
   } catch (err) {
     console.error('Error in /api/analyze:', err);
     res.status(500).json({ error: err.message || 'Internal server error' });

@@ -1,6 +1,8 @@
 
+
 import React, { useState, useEffect } from 'react';
 import ResumeAnalyzer from './ResumeAnalyzer';
+import ProfileEditModal from './ProfileEditModal';
 import './Dashboard.css';
 import './DashboardAnalytics.css';
 import './ResumeLayout.css';
@@ -14,7 +16,7 @@ function Dashboard() {
   const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
   const [careerPathSuggestions, setCareerPathSuggestions] = useState([]);
   const [loadingCareerPaths, setLoadingCareerPaths] = useState(false);
-  // State for showing the resume analyzer
+  // State for showing the Resume Analyzer (moved to Resume AI Analyzer State section below)
     // Static mapping of career fields to interview do's and don'ts
     const interviewTipsByField = {
       'Software Engineer': {
@@ -209,6 +211,34 @@ function Dashboard() {
   // Edit Profile Modal State
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // Save profile edits
+  const handleProfileSave = async (updatedFields) => {
+    try {
+      const res = await fetch(`${API_URL}/profiles/me`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(updatedFields)
+      });
+      const data = await res.json();
+      if (data.success) {
+        setProfile(data.profile);
+      } else {
+        throw new Error(data.message || 'Failed to update profile');
+      }
+    } catch (err) {
+      throw err;
+    }
+  };
+      {/* Profile Edit Modal */}
+      {showEditModal && (
+        <ProfileEditModal
+          profile={profile}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleProfileSave}
+        />
+      )}
+
   useEffect(() => {
     fetchUserInfo();
     fetchProfile();
@@ -216,6 +246,7 @@ function Dashboard() {
     fetchSavedJobsCount();
     fetchProfileViewsCount();
     fetchInterviewsCount();
+    fetchMatchedJobs();
   }, []);
 
   // Close dropdown when clicking outside
@@ -1316,44 +1347,41 @@ function Dashboard() {
                 {/* Skill Gap Analysis */}
                 <div className="chart-container">
                   <h3 className="chart-title">Skill Gap Analysis</h3>
-                  <div className="radar-chart-wrapper">
-                    <svg viewBox="0 0 200 200" style={{width: '200px', height: '200px'}}>
-                      {/* Pentagon background */}
-                      <polygon 
-                        points="100,30 160,80 140,150 60,150 40,80" 
-                        fill="#f0f9ff" 
-                        stroke="#e0f2fe" 
-                        strokeWidth="1"
-                      />
-                      <polygon 
-                        points="100,50 145,85 130,135 70,135 55,85" 
-                        fill="#dbeafe" 
-                        stroke="#bfdbfe" 
-                        strokeWidth="1"
-                      />
-                      
-                      {/* Skill levels (filled area) */}
-                      <polygon 
-                        points="100,40 150,75 135,140 65,140 50,75" 
-                        fill="rgba(59, 130, 246, 0.3)" 
-                        stroke="#3b82f6" 
-                        strokeWidth="2"
-                      />
-                      
-                      {/* Skill points */}
-                      <circle cx="100" cy="40" r="4" fill="#3b82f6"/>
-                      <circle cx="150" cy="75" r="4" fill="#3b82f6"/>
-                      <circle cx="135" cy="140" r="4" fill="#3b82f6"/>
-                      <circle cx="65" cy="140" r="4" fill="#3b82f6"/>
-                      <circle cx="50" cy="75" r="4" fill="#3b82f6"/>
-                      
-                      {/* Labels */}
-                      <text x="100" y="20" fontSize="11" fill="#374151" textAnchor="middle" fontWeight="500">React</text>
-                      <text x="170" y="80" fontSize="11" fill="#374151" textAnchor="start" fontWeight="500">JS</text>
-                      <text x="145" y="165" fontSize="11" fill="#374151" textAnchor="middle" fontWeight="500">TypeScript</text>
-                      <text x="55" y="165" fontSize="11" fill="#374151" textAnchor="middle" fontWeight="500">Leadership</text>
-                      <text x="20" y="80" fontSize="11" fill="#374151" textAnchor="end" fontWeight="500">Communication</text>
-                    </svg>
+                  <div className="skill-gap-content" style={{padding: '16px 0'}}>
+                    {careerGuidance && careerGuidance.skillGap ? (
+                      <>
+                        {/* Removed gap-summary as requested */}
+                        {/* Diverging Bar Graph for Skill Gap */}
+                        <div style={{ width: '100%', maxWidth: 600, margin: '24px auto 0', background: '#f8fafc', borderRadius: 12, padding: 24, boxShadow: '0 2px 8px #0001' }}>
+                          <svg width="100%" height={
+                            ((careerGuidance.skillGap.currentSkills?.length || 0) + (careerGuidance.skillGap.missingSkills?.length || 0)) * 32 + 20
+                          } style={{ minWidth: 320, maxWidth: 600 }}>
+                            {/* Current Skills: Green bars to the right */}
+                            {Array.isArray(careerGuidance.skillGap.currentSkills) && careerGuidance.skillGap.currentSkills.map((skill, i) => (
+                              <g key={skill}>
+                                <rect x="50%" y={i * 32 + 10} width="40%" height="24" fill="#10b981" rx="6" />
+                                <text x="51%" y={i * 32 + 26} fill="#fff" fontSize="15" fontFamily="inherit">{skill}</text>
+                              </g>
+                            ))}
+                            {/* Missing Skills: Orange bars to the left */}
+                            {Array.isArray(careerGuidance.skillGap.missingSkills) && careerGuidance.skillGap.missingSkills.map((skill, i) => (
+                              <g key={skill}>
+                                <rect x="10%" y={((careerGuidance.skillGap.currentSkills?.length || 0) + i) * 32 + 10} width="40%" height="24" fill="#f59e42" rx="6" />
+                                <text x="11%" y={((careerGuidance.skillGap.currentSkills?.length || 0) + i) * 32 + 26} fill="#fff" fontSize="15" fontFamily="inherit">{skill}</text>
+                              </g>
+                            ))}
+                            {/* Center divider */}
+                            <line x1="50%" x2="50%" y1="0" y2={((careerGuidance.skillGap.currentSkills?.length || 0) + (careerGuidance.skillGap.missingSkills?.length || 0)) * 32 + 10} stroke="#ddd" strokeWidth="2" />
+                          </svg>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 14 }}>
+                            <span style={{ color: '#f59e42' }}>Skills You Need</span>
+                            <span style={{ color: '#10b981' }}>Skills You Have</span>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{color: '#888'}}>No skill gap data available. Complete your profile and get career guidance to see your skill gap analysis.</div>
+                    )}
                   </div>
                 </div>
 
@@ -1381,9 +1409,6 @@ function Dashboard() {
                   )}
                   <h2 className="sidebar-profile-name">{profile?.fullName || user.fullName || user.username}</h2>
                   <p className="sidebar-profile-title">{profile?.professionalTitle || 'Professional'}</p>
-                  <button className="btn-edit-profile-sidebar" onClick={() => setShowEditModal(true)}>
-                    ✏️ Edit Profile
-                  </button>
                 </div>
 
                 {/* Bio Section */}
@@ -1673,9 +1698,6 @@ function Dashboard() {
                     </button>
                   )}
                 </div>
-                <div className="results-count">
-                  Showing {jobs.length} of {allJobs.length} jobs
-                </div>
               </div>
               
               {loadingJobs ? (
@@ -1699,7 +1721,27 @@ function Dashboard() {
                       >
                         <div className="job-header">
                           <h3>{job.jobTitle}</h3>
-                          <span className="job-badge">{job.jobType}</span>
+                          <span
+                            className="job-badge"
+                            style={{
+                              background:
+                                job.jobType === 'Full-time' ? '#2563eb' :
+                                job.jobType === 'Part-time' ? '#10b981' :
+                                job.jobType === 'Contract' ? '#f59e42' :
+                                job.jobType === 'Internship' ? '#a21caf' :
+                                '#64748b',
+                              color: '#fff',
+                              borderRadius: 12,
+                              padding: '4px 12px',
+                              fontSize: 12,
+                              fontWeight: 600,
+                              minWidth: 70,
+                              textAlign: 'center',
+                              display: 'inline-block',
+                            }}
+                          >
+                            {job.jobType}
+                          </span>
                         </div>
                         <p className="job-company">🏢 {job.company}</p>
                         <div className="job-details">
@@ -1871,11 +1913,11 @@ function Dashboard() {
                             <div className="dropdown-menu-container">
                               <button 
                                 className="menu-btn"
-                                onClick={() => setOpenMenuId(openMenuId == app._id ? null : app._id)}
+                                onClick={() => setOpenMenuId(openMenuId === app._id ? null : app._id)}
                               >
                                 ⋯
                               </button>
-                              {openMenuId == app._id && (
+                              {openMenuId === app._id && (
                                 <div className="dropdown-menu">
                                   {app.resume && (
                                     <a 
@@ -2037,7 +2079,38 @@ function Dashboard() {
                             fontWeight: 600,
                             boxShadow: '0 2px 8px #0001',
                           }}
-                          onClick={() => setShowResumeAnalyzer(true)}
+                          onClick={async () => {
+                            setResumeUploadError('');
+                            if (!profile?.resume?.fileUrl) {
+                              setResumeUploadError('No resume uploaded. Please upload your resume first.');
+                              return;
+                            }
+                            setAnalyzingResume(true);
+                            setShowResumeAnalyzer(true);
+                            setResumeAnalysis(null);
+                            try {
+                              // Fetch the resume PDF as a blob and preserve filename/type
+                              const response = await fetch(`http://localhost:3001${profile.resume.fileUrl}`);
+                              const blob = await response.blob();
+                              // Try to get the filename from the URL or fallback
+                              const urlParts = profile.resume.fileUrl.split('/');
+                              const filename = urlParts[urlParts.length - 1] || 'resume.pdf';
+                              const file = new File([blob], filename, { type: blob.type || 'application/pdf' });
+                              const formData = new FormData();
+                              formData.append('resumeFile', file);
+                              const res = await fetch('http://localhost:3001/api/analyze', {
+                                method: 'POST',
+                                body: formData
+                              });
+                              const data = await res.json();
+                              if (!res.ok) throw new Error(data.error || 'Analysis failed');
+                              setResumeAnalysis({ ...data.analysis, _resumeText: data.resumeText });
+                            } catch (err) {
+                              setResumeUploadError(err.message);
+                            } finally {
+                              setAnalyzingResume(false);
+                            }
+                          }}
                         >
                           Resume Analyzer
                         </button>
@@ -2052,6 +2125,22 @@ function Dashboard() {
                           padding: 32,
                         }}>
                           <h2 style={{ color: '#2563eb', fontWeight: 700, marginBottom: 24 }}>Resume Analyzer Result</h2>
+                          {/* Show extracted resume text if available */}
+                          {resumeAnalysis && resumeAnalysis._resumeText && (
+                            <div style={{ marginBottom: 24 }}>
+                              <b>Extracted Resume Text:</b>
+                              <pre style={{
+                                background: '#f1f5f9',
+                                padding: 12,
+                                borderRadius: 8,
+                                maxHeight: 200,
+                                overflow: 'auto',
+                                fontSize: 13,
+                                marginTop: 8
+                              }}>{resumeAnalysis._resumeText}</pre>
+                            </div>
+                          )}
+                          {/* ...existing analysis UI... */}
                           <div style={{ marginBottom: 20 }}>
                             <b>Resume Score (0–100):</b>
                             <div style={{ fontSize: 28, color: '#22c55e', fontWeight: 700, marginTop: 8 }}>--</div>
@@ -2095,8 +2184,7 @@ function Dashboard() {
                       )}
                     </>
                   )}
-                // Add state for showing the analyzer
-                const [showResumeAnalyzer, setShowResumeAnalyzer] = useState(false);
+
                 </div>
                 {/* Resume Checker card removed as requested */}
               </div>
@@ -2135,14 +2223,14 @@ function Dashboard() {
                     </div>
                     <div className="score-display">
                       <div className="score-circle" style={{
-                        background: `conic-gradient(#667eea ${83 * 3.6}deg, #e5e7eb 0deg)`
+                        background: `conic-gradient(#667eea ${(careerMatchScore > 0 ? careerMatchScore : 0) * 3.6}deg, #e5e7eb 0deg)`
                       }}>
                         <div className="score-inner">
-                          <div className="score-number">83</div>
+                          <div className="score-number">{careerMatchScore > 0 ? careerMatchScore : '--'}</div>
                           <div className="score-label">%</div>
                         </div>
                       </div>
-                      <p className="score-description">Your current career match score is 83%.</p>
+                      <p className="score-description">Your current career match score is {careerMatchScore > 0 ? careerMatchScore : '--'}%.</p>
                     </div>
                   </div>
 
@@ -2411,77 +2499,71 @@ function Dashboard() {
       {/* Job Matches Modal */}
       {showMatchesModal && (
         <div className="modal-overlay" onClick={() => setShowMatchesModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>🎯 Your Job Matches</h2>
+          <div className="modal-content" style={{maxWidth: 700, borderRadius: 18, boxShadow: '0 8px 32px #0002', padding: 0}} onClick={e => e.stopPropagation()}>
+            <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%', marginTop: 18, marginBottom: -8}}>
               <button className="modal-close" onClick={() => setShowMatchesModal(false)}>×</button>
             </div>
-            
-            <div className="modal-body">
+            <div style={{padding: '32px 32px 24px 32px', borderRadius: 18, background: 'linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%)'}}>
+              <h2 style={{margin: 0, fontWeight: 700, fontSize: 28, color: '#222', letterSpacing: '-1px', textAlign: 'center', marginBottom: 24}}>Job Matches</h2>
               {loadingMatches ? (
-                <div className="loading-state">Loading matched jobs...</div>
+                <div className="loading-state" style={{textAlign: 'center', padding: 32}}>Loading matched jobs...</div>
               ) : matchedJobs.length === 0 ? (
-                <div className="empty-state">
-                  <p>No job matches found.</p>
+                <div className="empty-state" style={{textAlign: 'center', padding: 32}}>
+                  <p style={{fontSize: 18, color: '#888'}}>No job matches found.</p>
                   <small>Complete your profile to get better matches!</small>
                 </div>
               ) : (
-                <div className="matches-list">
+                <div className="matches-list" style={{maxHeight: 500, overflowY: 'auto', paddingRight: 8, scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+
                   {Array.isArray(matchedJobs) && matchedJobs.map((match) => {
                     const job = match.job || match;
                     const score = Math.round(match.matchScore || 0);
                     return (
-                    <div key={job._id} className="match-card">
-                      <div className="match-header">
+                    <div key={job._id} className="match-card" style={{background: '#fff', borderRadius: 14, boxShadow: '0 2px 8px #0001', marginBottom: 24, padding: 24, display: 'flex', flexDirection: 'column', gap: 12}}>
+                      <div className="match-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                         <div>
-                          <h3>{job.jobTitle}</h3>
-                          <p className="company-name">🏢 {job.company}</p>
+                          <h3 style={{margin: 0, fontSize: 22, fontWeight: 600, color: '#2563eb'}}>{job.jobTitle}</h3>
+                          <p className="company-name" style={{margin: 0, color: '#64748b', fontWeight: 500}}>🏢 {job.company}</p>
                         </div>
-                        <div className="match-score">
+                        <div className="match-score" style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                           <div className="score-circle" style={{
                             background: score >= 70 ? '#10b981' : 
-                                       score >= 50 ? '#f59e0b' : '#3b82f6'
-                          }}>
-                            {score}%
-                          </div>
-                          <span className="score-label">Match</span>
+                                       score >= 50 ? '#f59e0b' : '#3b82f6',
+                            color: '#fff', fontWeight: 700, fontSize: 20, width: 54, height: 54, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4
+                          }}>{score}%</div>
+                          <span className="score-label" style={{fontSize: 13, color: '#888'}}>Match</span>
                         </div>
                       </div>
-                      
-                      <div className="match-details">
-                        <span className="detail-badge">📍 {job.location?.city || 'Remote'}, {job.location?.country || ''}</span>
-                        <span className="detail-badge">💼 {job.workArrangement}</span>
-                        <span className="detail-badge">📊 {job.experienceLevel}</span>
-                        <span className="detail-badge">⏰ {job.jobType}</span>
+                      <div className="match-details" style={{display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 4}}>
+                        <span className="detail-badge" style={{background: '#e0e7ff', color: '#3730a3', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>📍 {job.location?.city || 'Remote'}, {job.location?.country || ''}</span>
+                        <span className="detail-badge" style={{background: '#f1f5f9', color: '#2563eb', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>💼 {job.workArrangement}</span>
+                        <span className="detail-badge" style={{background: '#f1f5f9', color: '#059669', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>📊 {job.experienceLevel}</span>
+                        <span className="detail-badge" style={{background: '#f1f5f9', color: '#f59e42', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>⏰ {job.jobType}</span>
                       </div>
-                      
                       {job.salary && job.salary.min && (
-                        <p className="match-salary">
+                        <p className="match-salary" style={{margin: 0, color: '#0d9488', fontWeight: 500, fontSize: 15}}>
                           💰 ${job.salary.min.toLocaleString()} - ${job.salary.max.toLocaleString()} {job.salary.currency}
                         </p>
                       )}
-                      
-                      <p className="match-description">
+                      <p className="match-description" style={{margin: 0, color: '#444', fontSize: 15}}>
                         {job.description ? job.description.substring(0, 150) + '...' : 'No description available'}
                       </p>
-                      
                       {job.requiredSkills && job.requiredSkills.length > 0 && (
-                        <div className="match-skills">
-                          <strong>Required Skills:</strong>
-                          <div className="skills-tags">
+                        <div className="match-skills" style={{marginTop: 6}}>
+                          <strong style={{fontSize: 13, color: '#222'}}>Required Skills:</strong>
+                          <div className="skills-tags" style={{display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4}}>
                             {Array.isArray(job.requiredSkills) && job.requiredSkills.slice(0, 5).map((skill, index) => (
-                              <span key={index} className="skill-tag">{skill.name || skill}</span>
+                              <span key={index} className="skill-tag" style={{background: '#f3f4f6', color: '#2563eb', borderRadius: 5, padding: '2px 8px', fontSize: 13}}>{skill.name || skill}</span>
                             ))}
                             {job.requiredSkills.length > 5 && (
-                              <span className="skill-tag">+{job.requiredSkills.length - 5} more</span>
+                              <span className="skill-tag" style={{background: '#f3f4f6', color: '#2563eb', borderRadius: 5, padding: '2px 8px', fontSize: 13}}>+{job.requiredSkills.length - 5} more</span>
                             )}
                           </div>
                         </div>
                       )}
-                      
-                      <div className="match-actions">
-                        <button className="btn-apply-modal" onClick={() => handleApplyClick(job)}>Apply Now</button>
-                        <button className="btn-view-details" onClick={() => {
+                      <div className="match-actions" style={{display: 'flex', gap: 12, marginTop: 10}}>
+                        <button className="btn-apply-modal" style={{background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', fontWeight: 600, fontSize: 15, cursor: 'pointer'}} onClick={() => handleApplyClick(job)}>Apply Now</button>
+                        <button className="btn-view-details" style={{background: '#f1f5f9', color: '#2563eb', border: 'none', borderRadius: 6, padding: '8px 20px', fontWeight: 600, fontSize: 15, cursor: 'pointer'}} onClick={() => {
                           setSelectedJob(job);
                           setShowJobDetailsModal(true);
                           setShowMatchesModal(false);
@@ -2500,72 +2582,67 @@ function Dashboard() {
       {/* Saved Jobs Modal */}
       {showSavedJobsModal && (
         <div className="modal-overlay" onClick={() => setShowSavedJobsModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>⭐ Your Saved Jobs</h2>
+          <div className="modal-content" style={{maxWidth: 700, borderRadius: 18, boxShadow: '0 8px 32px #0002', padding: 0}} onClick={e => e.stopPropagation()}>
+            <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%', marginTop: 18, marginBottom: -8}}>
               <button className="modal-close" onClick={() => setShowSavedJobsModal(false)}>×</button>
             </div>
-            
-            <div className="modal-body">
+            <div style={{padding: '32px 32px 24px 32px', borderRadius: 18, background: 'linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%)'}}>
+              <h2 style={{margin: 0, fontWeight: 700, fontSize: 28, color: '#222', letterSpacing: '-1px', textAlign: 'center', marginBottom: 24}}>Saved Jobs</h2>
               {loadingSavedJobs ? (
-                <div className="loading-state">Loading saved jobs...</div>
+                <div className="loading-state" style={{textAlign: 'center', padding: 32}}>Loading saved jobs...</div>
               ) : savedJobs.length === 0 ? (
-                <div className="empty-state">
-                  <p>No saved jobs yet.</p>
+                <div className="empty-state" style={{textAlign: 'center', padding: 32}}>
+                  <p style={{fontSize: 18, color: '#888'}}>No saved jobs yet.</p>
                   <small>Start saving jobs you're interested in!</small>
                 </div>
               ) : (
-                <div className="matches-list">
+                <div className="matches-list saved-jobs-matches-list" style={{maxHeight: 500, overflowY: 'auto', paddingRight: 8}}>
                   {Array.isArray(savedJobs) && savedJobs.map((job) => (
-                    <div key={job._id} className="match-card">
-                      <div className="match-header">
+                    <div key={job._id} className="match-card" style={{background: '#fff', borderRadius: 14, boxShadow: '0 2px 8px #0001', marginBottom: 24, padding: 24, display: 'flex', flexDirection: 'column', gap: 12}}>
+                      <div className="match-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                         <div>
-                          <h3>{job.jobTitle}</h3>
-                          <p className="company-name">🏢 {job.company}</p>
+                          <h3 style={{margin: 0, fontSize: 22, fontWeight: 600, color: '#2563eb'}}>{job.jobTitle}</h3>
+                          <p className="company-name" style={{margin: 0, color: '#64748b', fontWeight: 500}}>🏢 {job.company}</p>
                         </div>
                         <button 
                           className="btn-unsave"
+                          style={{background: 'none', border: 'none', color: '#ef4444', fontSize: 22, cursor: 'pointer'}} 
                           onClick={() => handleUnsaveJob(job._id)}
                           title="Remove from saved"
                         >
                           ❌
                         </button>
                       </div>
-                      
-                      <div className="match-details">
-                        <span className="detail-badge">📍 {job.location.city || 'Remote'}, {job.location.country || ''}</span>
-                        <span className="detail-badge">💼 {job.workArrangement}</span>
-                        <span className="detail-badge">📊 {job.experienceLevel}</span>
-                        <span className="detail-badge">⏰ {job.jobType}</span>
+                      <div className="match-details" style={{display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 4}}>
+                        <span className="detail-badge" style={{background: '#e0e7ff', color: '#3730a3', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>📍 {job.location.city || 'Remote'}, {job.location.country || ''}</span>
+                        <span className="detail-badge" style={{background: '#f1f5f9', color: '#2563eb', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>💼 {job.workArrangement}</span>
+                        <span className="detail-badge" style={{background: '#f1f5f9', color: '#059669', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>📊 {job.experienceLevel}</span>
+                        <span className="detail-badge" style={{background: '#f1f5f9', color: '#f59e42', borderRadius: 6, padding: '2px 10px', fontSize: 13}}>⏰ {job.jobType}</span>
                       </div>
-                      
                       {job.salary && job.salary.min && (
-                        <p className="match-salary">
+                        <p className="match-salary" style={{margin: 0, color: '#0d9488', fontWeight: 500, fontSize: 15}}>
                           💰 ${job.salary.min.toLocaleString()} - ${job.salary.max.toLocaleString()} {job.salary.currency}
                         </p>
                       )}
-                      
-                      <p className="match-description">
+                      <p className="match-description" style={{margin: 0, color: '#444', fontSize: 15}}>
                         {job.description.substring(0, 150)}...
                       </p>
-                      
                       {job.requiredSkills && job.requiredSkills.length > 0 && (
-                        <div className="match-skills">
-                          <strong>Required Skills:</strong>
-                          <div className="skills-tags">
+                        <div className="match-skills" style={{marginTop: 6}}>
+                          <strong style={{fontSize: 13, color: '#222'}}>Required Skills:</strong>
+                          <div className="skills-tags" style={{display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4}}>
                             {Array.isArray(job.requiredSkills) && job.requiredSkills.slice(0, 5).map((skill, index) => (
-                              <span key={index} className="skill-tag">{skill.name}</span>
+                              <span key={index} className="skill-tag" style={{background: '#f3f4f6', color: '#2563eb', borderRadius: 5, padding: '2px 8px', fontSize: 13}}>{skill.name}</span>
                             ))}
                             {job.requiredSkills.length > 5 && (
-                              <span className="skill-tag">+{job.requiredSkills.length - 5} more</span>
+                              <span className="skill-tag" style={{background: '#f3f4f6', color: '#2563eb', borderRadius: 5, padding: '2px 8px', fontSize: 13}}>+{job.requiredSkills.length - 5} more</span>
                             )}
                           </div>
                         </div>
                       )}
-                      
-                      <div className="match-actions">
-                        <button className="btn-apply-modal" onClick={() => handleApplyClick(job)}>Apply Now</button>
-                        <button className="btn-view-details">View Details</button>
+                      <div className="match-actions" style={{display: 'flex', gap: 12, marginTop: 10}}>
+                        <button className="btn-apply-modal" style={{background: '#2563eb', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 20px', fontWeight: 600, fontSize: 15, cursor: 'pointer'}} onClick={() => handleApplyClick(job)}>Apply Now</button>
+                        <button className="btn-view-details" style={{background: '#f1f5f9', color: '#2563eb', border: 'none', borderRadius: 6, padding: '8px 20px', fontWeight: 600, fontSize: 15, cursor: 'pointer'}}>View Details</button>
                       </div>
                     </div>
                   ))}
@@ -2580,11 +2657,10 @@ function Dashboard() {
       {showApplicationsModal && (
         <div className="modal-overlay" onClick={() => setShowApplicationsModal(false)}>
           <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Applications</h2>
+            <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%', marginTop: 18, marginBottom: -8}}>
               <button className="modal-close" onClick={() => setShowApplicationsModal(false)}>×</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body" style={{paddingTop: 32}}>
               {myApplications.filter(app => app.job && app.job.jobTitle).length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-icon">📋</div>
@@ -2622,11 +2698,11 @@ function Dashboard() {
                             <div className="dropdown-menu-container">
                               <button 
                                 className="menu-btn"
-                                onClick={() => setOpenMenuId(openMenuId == app._id ? null : app._id)}
+                                onClick={() => setOpenMenuId(openMenuId === app._id ? null : app._id)}
                               >
                                 ⋯
                               </button>
-                              {openMenuId == app._id && (
+                              {openMenuId === app._id && (
                                 <div className="dropdown-menu">
                                   {app.resume && (
                                     <a 
@@ -2667,42 +2743,42 @@ function Dashboard() {
       {/* Profile Views Modal */}
       {showProfileViewsModal && (
         <div className="modal-overlay" onClick={() => setShowProfileViewsModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>👁️ Profile Views {profileViewsCount > 0 && `(${profileViewsCount})`}</h2>
-              <button className="close-btn" onClick={() => setShowProfileViewsModal(false)}>✕</button>
+          <div className="modal-content" style={{maxWidth: 600, borderRadius: 18, boxShadow: '0 8px 32px #0002', padding: 0}} onClick={e => e.stopPropagation()}>
+            <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%', marginTop: 18, marginBottom: -8}}>
+              <button className="modal-close" onClick={() => setShowProfileViewsModal(false)}>×</button>
             </div>
-            <div className="modal-body">
+            <div style={{padding: '32px 32px 24px 32px', borderRadius: 18, background: 'linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%)'}}>
+              <h2 style={{margin: 0, fontWeight: 700, fontSize: 28, color: '#222', letterSpacing: '-1px', textAlign: 'center', marginBottom: 24}}>Profile Views</h2>
               {loadingProfileViews ? (
-                <div className="loading-state">Loading profile views...</div>
+                <div className="loading-state" style={{textAlign: 'center', padding: 32}}>Loading profile views...</div>
               ) : profileViews.length === 0 ? (
-                <div className="empty-state">
-                  <p>No one has viewed your profile yet.</p>
+                <div className="empty-state" style={{textAlign: 'center', padding: 32}}>
+                  <p style={{fontSize: 18, color: '#888'}}>No one has viewed your profile yet.</p>
                   <small>Keep applying to jobs and updating your profile to attract recruiters!</small>
                 </div>
               ) : (
-                <div className="profile-views-list">
+                <div className="profile-views-list" style={{maxHeight: 500, overflowY: 'auto', paddingRight: 8}}>
                   {Array.isArray(profileViews) && profileViews.map((view, index) => (
-                    <div key={view._id || index} className="profile-view-card">
-                      <div className="view-header">
-                        <div className="viewer-avatar">
+                    <div key={view._id || index} className="profile-view-card" style={{background: '#fff', borderRadius: 14, boxShadow: '0 2px 8px #0001', marginBottom: 18, padding: 18}}>
+                      <div className="view-header" style={{display: 'flex', alignItems: 'center', gap: 16}}>
+                        <div className="viewer-avatar" style={{width: 44, height: 44, borderRadius: '50%', background: '#e0e7ff', color: '#3730a3', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700}}>
                           {view.viewerName?.[0]?.toUpperCase() || '👤'}
                         </div>
-                        <div className="viewer-info">
-                          <h4>{view.viewerName || 'Anonymous'}</h4>
-                          <p className="viewer-type">{view.viewerType || 'Recruiter'}</p>
+                        <div className="viewer-info" style={{flex: 1}}>
+                          <h4 style={{margin: 0, fontWeight: 600, fontSize: 18}}>{view.viewerName || 'Anonymous'}</h4>
+                          <p className="viewer-type" style={{margin: 0, color: '#64748b', fontSize: 14}}>{view.viewerType || 'Recruiter'}</p>
                         </div>
-                        <div className="view-date">
+                        <div className="view-date" style={{color: '#888', fontSize: 14}}>
                           {new Date(view.viewedAt).toLocaleDateString()}
                         </div>
                       </div>
                       {view.application && view.application.job && (
-                        <div className="view-context">
+                        <div className="view-context" style={{marginTop: 8, color: '#2563eb', fontSize: 14}}>
                           <span className="context-icon">💼</span>
-                          <span>Viewed while reviewing your application for <strong>{view.application.job.jobTitle}</strong> at <strong>{view.application.job.company}</strong></span>
+                          <span> Viewed while reviewing your application for <strong>{view.application.job.jobTitle}</strong> at <strong>{view.application.job.company}</strong></span>
                         </div>
                       )}
-                      <div className="view-time">
+                      <div className="view-time" style={{color: '#64748b', fontSize: 13, marginTop: 6}}>
                         {new Date(view.viewedAt).toLocaleTimeString()}
                       </div>
                     </div>
@@ -2717,21 +2793,21 @@ function Dashboard() {
       {/* Interviews Modal */}
       {showInterviewsModal && (
         <div className="modal-overlay" onClick={() => setShowInterviewsModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>✓ Scheduled Interviews {interviewsCount > 0 && `(${interviewsCount})`}</h2>
-              <button className="close-btn" onClick={() => setShowInterviewsModal(false)}>✕</button>
+          <div className="modal-content" style={{maxWidth: 600, borderRadius: 18, boxShadow: '0 8px 32px #0002', padding: 0}} onClick={e => e.stopPropagation()}>
+            <div style={{display: 'flex', justifyContent: 'flex-end', width: '100%', marginTop: 18, marginBottom: -8}}>
+              <button className="modal-close" onClick={() => setShowInterviewsModal(false)}>×</button>
             </div>
-            <div className="modal-body">
+            <div style={{padding: '32px 32px 24px 32px', borderRadius: 18, background: 'linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%)'}}>
+              <h2 style={{margin: 0, fontWeight: 700, fontSize: 28, color: '#222', letterSpacing: '-1px', textAlign: 'center', marginBottom: 24}}>Scheduled Interviews {interviewsCount > 0 && `(${interviewsCount})`}</h2>
               {loadingInterviews ? (
-                <div className="loading-state">Loading interviews...</div>
+                <div className="loading-state" style={{textAlign: 'center', padding: 32}}>Loading interviews...</div>
               ) : interviews.length === 0 ? (
-                <div className="empty-state">
-                  <p>No interviews scheduled yet.</p>
+                <div className="empty-state" style={{textAlign: 'center', padding: 32}}>
+                  <p style={{fontSize: 18, color: '#888'}}>No interviews scheduled yet.</p>
                   <small>When employers schedule interviews with you, they'll appear here!</small>
                 </div>
               ) : (
-                <div className="profile-views-list">
+                <div className="profile-views-list" style={{maxHeight: 500, overflowY: 'auto', paddingRight: 8}}>
                   {Array.isArray(interviews) && interviews.map((interview, index) => (
                     <div key={interview._id || index} className="profile-view-card">
                       <div className="view-header">
@@ -2963,9 +3039,9 @@ function Dashboard() {
                       <span className="section-icon">✔</span>
                       <h3>Grammar & Spelling</h3>
                     </div>
-                    {resumeAnalysis.grammarIssues.length > 0 ? (
+                    {Array.isArray(resumeAnalysis.grammarIssues) && resumeAnalysis.grammarIssues.length > 0 ? (
                       <div className="issues-list">
-                        {Array.isArray(resumeAnalysis?.grammarIssues) && resumeAnalysis.grammarIssues.map((issue, index) => (
+                        {resumeAnalysis.grammarIssues.map((issue, index) => (
                           <div key={index} className="issue-item">
                             <span className="issue-icon">⚠️</span>
                             <div>
@@ -3015,7 +3091,28 @@ function Dashboard() {
                 <h2>{selectedJob.jobTitle}</h2>
                 <p className="job-details-company">🏢 {selectedJob.company}</p>
               </div>
-              <span className="job-badge-large">{selectedJob.jobType}</span>
+              <span
+                className="job-badge-large"
+                style={{
+                  background:
+                    selectedJob.jobType === 'Full-time' ? '#2563eb' :
+                    selectedJob.jobType === 'Part-time' ? '#10b981' :
+                    selectedJob.jobType === 'Contract' ? '#f59e42' :
+                    selectedJob.jobType === 'Internship' ? '#a21caf' :
+                    '#64748b',
+                  color: '#fff',
+                  borderRadius: 20,
+                  padding: '8px 16px',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  border: 'none',
+                  minWidth: 80,
+                  textAlign: 'center',
+                  display: 'inline-block',
+                }}
+              >
+                {selectedJob.jobType}
+              </span>
             </div>
 
             <div className="job-details-meta">

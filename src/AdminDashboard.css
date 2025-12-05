@@ -1,3 +1,105 @@
+/* Modern modal header for Edit Job Details */
+.modal-header {
+    padding: 25px 30px 18px 30px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    color: #222;
+    border-top-left-radius: 22px;
+    border-top-right-radius: 22px;
+}
+
+.modal-header h2 {
+    margin: 0 auto;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #222;
+    text-align: center;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 32px;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+.modal-close:hover {
+    background: #f0f0f0;
+}
+/* Lower the Reports & Analytics heading by one line visually */
+.reports-analytics-section .section-title {
+    margin-bottom: 1.2rem;
+}
+.reports-analytics-section {
+    height: 270px;
+    min-height: 270px;
+    max-height: 270px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.reports-analytics-section .analytics-charts {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    height: 100%;
+}
+
+@media (max-width: 1024px) {
+    .reports-analytics-section {
+        min-height: unset;
+        max-height: unset;
+        height: auto;
+    }
+    .reports-analytics-section .analytics-charts {
+        flex-direction: column;
+        align-items: stretch;
+        height: auto;
+    }
+}
+.reports-analytics-section {
+    height: 270px;
+    min-height: 270px;
+    max-height: 270px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+@media (max-width: 1024px) {
+    .reports-analytics-section {
+        min-height: unset;
+        max-height: unset;
+        height: auto;
+    }
+}
+/* Flex row for dashboard analytics and bar graph */
+.dashboard-row-flex {
+    display: flex;
+    gap: 32px;
+    margin: 32px 0;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-row-flex {
+        flex-direction: column;
+        gap: 18px;
+    }
+}
 /* Admin Dashboard Styles */
 /* Modal Overlay and Content Styles (copied from Dashboard.css for admin modals) */
 .modal-overlay {
@@ -67,61 +169,9 @@
 }
 
 /* Sidebar */
-.admin-sidebar {
-    width: 260px;
-    background: #0087e1;
-    color: white;
-    position: fixed;
-    height: 100vh;
-    overflow-y: auto;
-    z-index: 1000;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.admin-logo {
-    padding: 25px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.admin-logo h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 600;
-}
-
-.admin-nav {
-    padding: 20px 0;
-}
-
-.admin-nav-link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 15px 25px;
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.8);
-    text-align: left;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    border-left: 4px solid transparent;
-    text-transform: capitalize;
-}
-
-.admin-nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-.admin-nav-link.active {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border-left: 4px solid white;
-}
 
 /* Main Content Area */
+
 .admin-main {
     flex: 1;
     margin-left: 260px;
@@ -2061,11 +2111,17 @@
 /* User Activity Section */
 
 .user-activity-section {
-    margin-top: 2rem;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     padding: 1.5rem;
+    height: 270px;
+    min-height: 270px;
+    max-height: 270px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .user-activity-section h3 {
@@ -2077,7 +2133,7 @@
 
 .activity-chart {
     width: 100%;
-    height: 200px;
+    height: 100%;
 }
 
 /* Right Column */
@@ -2140,14 +2196,11 @@
 }
 
 /* Reports & Analytics Section */
-.reports-analytics-section {
-    min-height: 300px;
-}
 
 .analytics-charts {
     display: flex;
     gap: 2rem;
-    align-items: center;
+    align-items: flex-start;
 }
 
 /* Bar Chart */
