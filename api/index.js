@@ -74,6 +74,12 @@ app.use('/api/profile-views', profileViewRoutes);
 app.use('/api/interviews', interviewRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api', resumeAnalysisRoutes);
+
 app.use('/api/career-paths', careerPathsRoutes);
+
+// Health check route for Vercel serverless
+app.get('/', (req, res) => {
+    res.send('API is running');
+});
 
 module.exports = serverless(app);
