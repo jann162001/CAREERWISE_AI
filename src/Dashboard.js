@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import ResumeAnalyzer from './ResumeAnalyzer';
+import ResumeAnalyzerTab from './ResumeAnalyzerTab';
 import ProfileEditModal from './ProfileEditModal';
 import './Dashboard.css';
 import './DashboardAnalytics.css';
@@ -91,6 +91,7 @@ function Dashboard() {
     // Restore the last active page from localStorage
     return localStorage.getItem('activePage') || 'dashboard';
   });
+  // ...existing code...
   const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
@@ -1056,7 +1057,7 @@ function Dashboard() {
         </div>
         
         <nav className="sidebar-nav">
-          {['dashboard', 'profile', 'jobs', 'applications', 'career-guidance', 'resume', 'messages'].map(page => (
+          {['dashboard', 'profile', 'jobs', 'applications', 'career-guidance', 'resume', 'messages', 'resume-analyzer'].map(page => (
             <div
               key={page}
               onClick={() => changeActivePage(page)}
@@ -1088,7 +1089,11 @@ function Dashboard() {
 
         {/* Content */}
         <div className="content-area">
-          {/* Resume Analyzer and AI metric card removed as requested */}
+          {/* Resume Analyzer Tab */}
+          {activePage === 'resume-analyzer' && (
+            <ResumeAnalyzerTab userId={user?.userId || user?._id || ''} />
+          )}
+          {/* ...existing dashboard content... */}
           {activePage === 'dashboard' && (
             <>
               {/* Top Metrics Cards */}
@@ -1978,51 +1983,101 @@ function Dashboard() {
 
 
 
-                  <input
-                    type="file"
-                    id="resume-upload-input"
-                    accept=".pdf"
-                    style={{ display: 'none' }}
-                    onChange={async e => {
-                      if (e.target.files && e.target.files[0]) {
-                        const file = e.target.files[0];
+                  <div
+                    style={{
+                      border: '2px dashed #2563eb',
+                      borderRadius: 16,
+                      padding: 48,
+                      background: '#f8fafc',
+                      textAlign: 'center',
+                      marginBottom: 32,
+                      position: 'relative',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onDragOver={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.currentTarget.style.borderColor = '#22c55e';
+                    }}
+                    onDragLeave={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.currentTarget.style.borderColor = '#2563eb';
+                    }}
+                    onDrop={async e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      e.currentTarget.style.borderColor = '#2563eb';
+                      const file = e.dataTransfer.files[0];
+                      if (file && file.type === 'application/pdf') {
                         setUploadingResume(true);
                         setResumeAnalysis(null);
                         setResumeUploadError('');
                         try {
                           const formData = new FormData();
-                          formData.append('resumeFile', file);
-                          const res = await fetch('http://localhost:3001/api/analyze', {
+                          formData.append('resume', file);
+                          const res = await fetch('http://localhost:3001/api/profiles/upload-resume', {
                             method: 'POST',
+                            credentials: 'include',
                             body: formData
                           });
                           const data = await res.json();
-                          if (!res.ok) throw new Error(data.error || 'Analysis failed');
+                          if (!res.ok) throw new Error(data.message || 'Upload failed');
                           setResumeAnalysis(data.analysis);
                         } catch (err) {
                           setResumeUploadError(err.message);
                         } finally {
                           setUploadingResume(false);
                         }
+                      } else {
+                        setResumeUploadError('Please upload a PDF file.');
                       }
                     }}
-                  />
-                  <button
-                    style={{
-                      background: '#22c55e',
-                      color: '#fff',
-                      fontSize: '1.1rem',
-                      fontWeight: 600,
-                      border: 'none',
-                      borderRadius: 8,
-                      padding: '16px 32px',
-                      cursor: 'pointer',
-                      opacity: 1,
-                      boxShadow: '0 2px 8px rgba(34,197,94,0.08)'
-                    }}
-                    onClick={() => document.getElementById('resume-upload-input').click()}
-                    disabled={uploadingResume}
-                  />
+                  >
+                    <input
+                      type="file"
+                      id="resume-upload-input"
+                      accept=".pdf"
+                      style={{ display: 'block', margin: '0 auto 16px', fontSize: 16 }}
+                      onChange={async e => {
+                        if (e.target.files && e.target.files[0]) {
+                          const file = e.target.files[0];
+                          if (file.type !== 'application/pdf') {
+                            setResumeUploadError('Please upload a PDF file.');
+                            return;
+                          }
+                          setUploadingResume(true);
+                          setResumeAnalysis(null);
+                          setResumeUploadError('');
+                          try {
+                            const formData = new FormData();
+                            formData.append('resume', file);
+                            const res = await fetch('http://localhost:3001/api/profiles/upload-resume', {
+                              method: 'POST',
+                              credentials: 'include',
+                              body: formData
+                            });
+                            const data = await res.json();
+                            if (!res.ok) throw new Error(data.message || 'Upload failed');
+                            setResumeAnalysis(data.analysis);
+                          } catch (err) {
+                            setResumeUploadError(err.message);
+                          } finally {
+                            setUploadingResume(false);
+                          }
+                        }
+                      }}
+                    />
+                    <div style={{ fontSize: 20, color: '#2563eb', fontWeight: 700, marginBottom: 8 }}>
+                      Drag & drop your resume here
+                    </div>
+                    <div style={{ fontSize: 16, color: '#64748b', marginBottom: 12 }}>
+                      or click to select a PDF file to upload
+                    </div>
+                    <div style={{ fontSize: 14, color: '#64748b', marginBottom: 0 }}>
+                      Only PDF files are supported. Max size: 5MB.
+                    </div>
+                  </div>
 
                   {/* Scanner Progress UI */}
                   {uploadingResume && (
@@ -2097,7 +2152,7 @@ function Dashboard() {
                               const filename = urlParts[urlParts.length - 1] || 'resume.pdf';
                               const file = new File([blob], filename, { type: blob.type || 'application/pdf' });
                               const formData = new FormData();
-                              formData.append('resumeFile', file);
+                              formData.append('resume', file);
                               const res = await fetch('http://localhost:3001/api/analyze', {
                                 method: 'POST',
                                 body: formData
@@ -2138,6 +2193,18 @@ function Dashboard() {
                                 fontSize: 13,
                                 marginTop: 8
                               }}>{resumeAnalysis._resumeText}</pre>
+                            </div>
+                          )}
+                          {/* Show Cohere AI summary if available */}
+                          {resumeAnalysis && resumeAnalysis.cohere && resumeAnalysis.cohere.summary && (
+                            <div style={{ marginBottom: 20 }}>
+                              <b>AI Resume Summary:</b>
+                              <div style={{ fontSize: 16, color: '#2563eb', marginTop: 8 }}>{resumeAnalysis.cohere.summary}</div>
+                            </div>
+                          )}
+                          {resumeAnalysis && resumeAnalysis.cohere && resumeAnalysis.cohere.error && (
+                            <div style={{ marginBottom: 20, color: 'red' }}>
+                              <b>AI Analysis Error:</b> {resumeAnalysis.cohere.error}
                             </div>
                           )}
                           {/* ...existing analysis UI... */}

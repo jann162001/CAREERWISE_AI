@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const cors = require('cors');
 const path = require('path');
 const passport = require('./src/config/passport');
@@ -9,20 +10,21 @@ const passport = require('./src/config/passport');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS configuration
+// CORS configuration (development: only allow frontend origin with credentials)
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3002',
-        'http://localhost:3003',
-        'http://localhost:3004',
-        'http://localhost:3006',
-        'http://localhost:3007',
-        'http://localhost:3008',
-        'https://careerwise-ai-3fdi.vercel.app',
-        'https://careerwise-ai-fscs.vercel.app'
-    ],
+    origin: function(origin, callback) {
+        const allowedOrigins = [
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:3002',
+            'https://career-deploy-liard.vercel.app'
+        ];
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
@@ -36,7 +38,12 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
-    cookie: { 
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/authdb',
+        collectionName: 'sessions',
+        ttl: 24 * 60 * 60 // 24 hours
+    }),
+    cookie: {
         secure: false,
         httpOnly: true,
         sameSite: 'lax',

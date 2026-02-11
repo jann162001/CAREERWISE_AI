@@ -177,9 +177,12 @@ router.get('/status', async (req, res) => {
 // Upload resume only
 router.post('/upload-resume', upload.single('resume'), async (req, res) => {
     try {
-        // Use session userId instead of form data for security
-        const userId = req.session.userId || req.body.userId;
-
+        console.log('--- Resume Upload Debug ---');
+        console.log('Headers:', req.headers);
+        console.log('Body:', req.body);
+        console.log('Session BEFORE:', req.session);
+        // Use userId from header to avoid session loss during file upload
+        const userId = req.headers['x-user-id'] || req.body.userId;
         console.log('📤 Resume upload request received');
         console.log('Session userId:', req.session.userId);
         console.log('Body userId:', req.body.userId);
@@ -195,6 +198,7 @@ router.post('/upload-resume', upload.single('resume'), async (req, res) => {
 
         if (!req.file) {
             console.log('❌ No file uploaded');
+            console.log('req.file:', req.file);
             return res.status(400).json({ 
                 success: false, 
                 message: 'No file uploaded' 
@@ -202,10 +206,10 @@ router.post('/upload-resume', upload.single('resume'), async (req, res) => {
         }
 
         console.log('📁 File received:', req.file.originalname, 'Size:', req.file.size, 'bytes');
+        console.log('req.file:', req.file);
 
         // Find profile - using userId field, not user
         const profile = await Profile.findOne({ userId: userId });
-        
         if (!profile) {
             console.log('❌ Profile not found for userId:', userId);
             return res.status(404).json({ 
@@ -225,13 +229,52 @@ router.post('/upload-resume', upload.single('resume'), async (req, res) => {
 
         await profile.save();
 
-        console.log('✅ Resume uploaded successfully for user:', userId);
-        console.log('📄 Resume details:', profile.resume);
+        // Analyze the uploaded resume PDF with robust error handling
+        const { analyzeResume } = require('../utils/ResumeAnalyzer');
+        const resumePath = `public/uploads/resumes/${req.file.filename}`;
+        let analysisResult = null;
+        const fs = require('fs');
+        try {
+            if (!fs.existsSync(resumePath)) {
+                console.error('❌ Resume file does not exist at path:', resumePath);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Resume file not found for analysis.'
+                });
+            }
+            analysisResult = await analyzeResume(resumePath);
+            if (!analysisResult || !analysisResult.text) {
+                throw new Error('No analysis result or text extracted.');
+            }
+        } catch (analyzeErr) {
+            console.error('❌ Error analyzing resume PDF:', analyzeErr);
+            return res.status(500).json({
+                success: false,
+                message: 'Error analyzing resume: ' + analyzeErr.message
+            });
+        }
 
+        // Save analysis result to ResumeAnalysis model if available
+        try {
+            const ResumeAnalysis = require('../models/ResumeAnalysis');
+            await ResumeAnalysis.create({
+                userId: userId,
+                filename: req.file.originalname,
+                fileUrl: `/uploads/resumes/${req.file.filename}`,
+                uploadedAt: new Date(),
+                analysis: analysisResult
+            });
+        } catch (dbErr) {
+            console.error('❌ Error saving resume analysis:', dbErr);
+        }
+
+        console.log('✅ Resume uploaded and analyzed for user:', userId);
+        console.log('Session AFTER:', req.session);
         res.json({ 
             success: true, 
-            message: 'Resume uploaded successfully',
-            resume: profile.resume
+            message: 'Resume uploaded and analyzed successfully',
+            resume: profile.resume,
+            analysis: analysisResult
         });
     } catch (error) {
         console.error('❌ Resume upload error:', error);
@@ -245,14 +288,13 @@ router.post('/upload-resume', upload.single('resume'), async (req, res) => {
 // Analyze Resume with AI
 router.post('/analyze-resume', async (req, res) => {
     try {
-        if (!req.session.userId) {
+        const { userId } = req.session;
+        if (!userId) {
             return res.status(401).json({ 
                 success: false, 
                 message: 'Not authenticated' 
             });
         }
-
-        const userId = req.session.userId;
         const profile = await Profile.findOne({ userId });
 
         if (!profile || !profile.resume) {
@@ -377,15 +419,14 @@ router.post('/career-guidance', async (req, res) => {
     try {
         console.log('🎯 Career guidance request received');
         
-        if (!req.session.userId) {
+        const { userId } = req.session;
+        if (!userId) {
             console.log('❌ Not authenticated');
             return res.status(401).json({ 
                 success: false, 
                 message: 'Not authenticated' 
             });
         }
-
-        const userId = req.session.userId;
         console.log('👤 User ID:', userId);
         
         const profile = await Profile.findOne({ userId });
