@@ -2,6 +2,13 @@
   "version": 2,
   "routes": [
     { "src": "/api/(.*)", "dest": "api/index.js" },
+    { "src": "/static/(.*)", "dest": "build/static/$1" },
+    { "src": "/manifest.json", "dest": "build/manifest.json" },
+    { "src": "/favicon.ico", "dest": "build/favicon.ico" },
+    { "src": "/logo192.png", "dest": "build/logo192.png" },
+    { "src": "/logo512.png", "dest": "build/logo512.png" },
+    { "src": "/asset-manifest.json", "dest": "build/asset-manifest.json" },
+    { "src": "/robots.txt", "dest": "build/robots.txt" },
     { "src": "/(.*)", "dest": "build/index.html" }
   ]
 }
