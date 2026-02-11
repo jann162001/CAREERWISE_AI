@@ -1,3 +1,4 @@
+# Trigger redeploy after setting CI=false in Vercel
 # Dummy change to trigger Vercel redeploy and fresh build
 # Getting Started with Create React App
 
